@@ -27,7 +27,7 @@ make setup
 
 ### Get a Book Recommendation
 ```sh
-make run
+make run_cli
 ```
 Or run manually:
 ```sh
