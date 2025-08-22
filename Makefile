@@ -13,10 +13,7 @@ setup:
 	pipenv install --dev
 
 run_cli:
-	pipenv run python -m cli.camus_recommender recommend
-
-test:
-	pipenv run pytest tests/
+	PYTHONPATH=. $(PYTHON) -m cli.camus_recommender recommend
 
 clean:
 	rm -rf $(VENV_DIR)
