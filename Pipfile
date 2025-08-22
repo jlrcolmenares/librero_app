@@ -9,6 +9,7 @@ pytest = "*"
 [packages]
 click = "==8.1.7"
 rich = "==13.7.0"
+typer = "*"
 
 [requires]
 python_version = "3.13"
