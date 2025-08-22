@@ -1,25 +1,20 @@
 #!/usr/bin/env python3
+import re
 from typing import List, Optional
 
 import typer  # type: ignore[import-not-found]
-from rich.console import Console  # type: ignore[import-not-found]
-from rich.table import Table  # type: ignore[import-not-found]
 
 from librero.recommender import CAMUS_BOOKS, Book, recommend_book
 
 app = typer.Typer()
-console = Console()
 
 
 def display_books(books: List[Book], title: str = "Albert Camus' Books") -> None:
-    """Display books in a formatted table."""
-    table = Table(title=title, show_header=True, header_style="bold magenta")
-    table.add_column("Title", style="cyan")
-    table.add_column("Year", justify="right")
-    table.add_column("Genre")
+    """Display books in a simple text list using typer."""
+    typer.echo(title)
+    typer.echo("-" * len(title))
     for book in books:
-        table.add_row(book["title"], str(book["year"]), book["genre"])
-    console.print(table)
+        typer.echo(f"Title: {book['title']} | Year: {book['year']} | Genre: {book['genre']}")
 
 
 @app.command()  # type: ignore[misc]
@@ -32,8 +27,8 @@ def recommend(
     )
 ) -> None:
     """Get a random book recommendation from Albert Camus' works."""
-    console.print("\n[bold blue]Welcome to the Camus Book Recommender![/bold blue]")
-    console.print("Press Enter to get a recommendation or 'q' to quit\n")
+    typer.echo("\nWelcome to the Camus Book Recommender!")
+    typer.echo("Press Enter to get a recommendation or 'q' to quit\n")
 
     # Normalize the read list up-front
     read_books: List[str] = read or []
@@ -45,14 +40,19 @@ def recommend(
 
         recommendation = recommend_book(read_books)
         if recommendation.startswith("You've read all"):
-            console.print(f"\n[bold red]{recommendation}[/bold red]\n")
+            typer.echo(f"\n{recommendation}\n")
             break
 
-        console.print("\n[bold green]I recommend:[/bold green]")
-        console.print(f"[bold yellow]{recommendation}[/bold yellow]\n")
+        typer.echo("\nI recommend:")
+        typer.echo(f"{recommendation}\n")
 
-        read_books.append(recommendation)
-        console.print(f"Books read so far: {', '.join(read_books) if read_books else 'None'}\n")
+        # Extract the title from the recommendation sentence and track only titles
+        match = re.search(r"I recommend reading '([^']+)'", recommendation)
+        if match:
+            title = match.group(1)
+            if title not in read_books:
+                read_books.append(title)
+        typer.echo(f"Books read so far: {', '.join(read_books) if read_books else 'None'}\n")
 
 
 @app.command()  # type: ignore[misc]
@@ -61,5 +61,5 @@ def list_books() -> None:
     display_books(CAMUS_BOOKS)
 
 
-if __name__ == "__main__":
-    app()
+if __name__ == "__main__":  # pragma: no cover
+    app()  # pragma: no cover

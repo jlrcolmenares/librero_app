@@ -14,7 +14,7 @@ def test_recommend_book_returns_string() -> None:
 def test_recommend_book_with_no_books_read() -> None:
     """Test that recommend_book returns a book when no books are read."""
     result = recommend_book()
-    assert any(result in book["title"] for book in CAMUS_BOOKS)
+    assert any(book["title"] in result for book in CAMUS_BOOKS)
 
 
 def test_recommend_book_with_all_books_read() -> None:
