@@ -8,36 +8,18 @@ A simple command-line Python application that recommends a book by Albert Camus 
 - Filters books by title, year, or genre
 
 ## Requirements
-- Python 3.7+
+- Python 3.13
 
 ## Setup
-Clone the repository and navigate to the `librero_app` directory:
-
-```sh
-cd librero_app
-```
-
-Create a virtual environment and install dependencies:
-
-```sh
+Run the setup:
 make setup
 ```
 
 ## Usage
+This is a CLI interface made with Typer. Run it with:
 
-### Get a Book Recommendation
-You must specify your current book to get a recommendation:
 ```sh
-.venv/bin/python cli/camus_recommender.py recommend --current "The Stranger"
-```
-You can also specify books you've already read:
-```sh
-.venv/bin/python cli/camus_recommender.py recommend --current "The Stranger" --read "The Plague" --read "The Fall"
-```
-
-### List All Books
-```sh
-.venv/bin/python cli/camus_recommender.py list-books
+make run
 ```
 
 ## Clean Up
