@@ -1,7 +1,7 @@
 """Test configuration and fixtures for pytest."""
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add the project root to Python path for imports
@@ -22,6 +22,7 @@ def sample_books_read():
 def all_camus_books():
     """Fixture providing all Camus books for testing."""
     from librero.recommender import CAMUS_BOOKS
+
     return CAMUS_BOOKS
 
 
@@ -29,4 +30,5 @@ def all_camus_books():
 def cli_runner():
     """Fixture providing Click CLI test runner."""
     from click.testing import CliRunner
+
     return CliRunner()

@@ -4,16 +4,42 @@ VENV_DIR=.venv
 PYTHON=$(VENV_DIR)/bin/python
 PIP=$(VENV_DIR)/bin/pip
 
-.PHONY: venv setup run clean
+.PHONY: venv setup test run clean pre-commit-install pre-commit-run
 
 venv:
 	python3 -m venv $(VENV_DIR)
 
 setup:
 	pipenv install --dev
+	pip install pre-commit
+	pre-commit install
 
-run_cli:
+# Run tests
+pytest:
+	pytest -v --cov=librero --cov=cli tests/
+
+# Run tests with coverage report
+test: pytest
+	coverage report -m
+
+# Run the CLI
+run:
 	PYTHONPATH=. $(PYTHON) -m cli.camus_recommender recommend
 
+# Install pre-commit hooks
+pre-commit-install:
+	pre-commit install
+
+# Run pre-commit on all files
+pre-commit-run: pre-commit-install
+	pre-commit run --all-files
+
+# Alias for pre-commit-run
+pre-commit: pre-commit-run
+
+# Clean up
 clean:
 	rm -rf $(VENV_DIR)
+	rm -rf .pytest_cache
+	rm -f .coverage
+	rm -rf htmlcov/
