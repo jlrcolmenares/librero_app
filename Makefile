@@ -9,11 +9,14 @@ PIP=$(VENV_DIR)/bin/pip
 venv:
 	python3 -m venv $(VENV_DIR)
 
-setup: venv
-	. $(VENV_DIR)/bin/activate && $(PIP) install --upgrade pip && $(PIP) install -r requirements.txt
+setup:
+	pipenv install --dev
 
 run_cli:
-	PYTHONPATH=. $(PYTHON) -m cli.camus_recommender recommend
+	pipenv run python -m cli.camus_recommender recommend
+
+test:
+	pipenv run pytest tests/
 
 clean:
 	rm -rf $(VENV_DIR)
