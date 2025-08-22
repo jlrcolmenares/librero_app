@@ -1,33 +1,36 @@
 """Unit tests for the librero recommender module."""
 
 import unittest
-from librero.recommender import recommend_book, filter_books, CAMUS_BOOKS, DEFAULT_RECOMMENDATION
+from unittest.mock import patch
+from librero.recommender import recommend_book, CAMUS_BOOKS
 
 
 class TestRecommenderModule(unittest.TestCase):
     """Test cases for the recommender functionality."""
 
-    def test_default_recommendation_when_no_books_read(self):
-        """Test that default recommendation is returned when no books are provided."""
+    def test_recommendation_returns_string(self):
+        """Test that recommendation returns a string."""
         result = recommend_book()
-        self.assertEqual(result, DEFAULT_RECOMMENDATION)
-        
-        result = recommend_book([])
-        self.assertEqual(result, DEFAULT_RECOMMENDATION)
+        self.assertIsInstance(result, str)
+    
+    def test_recommendation_with_no_books_read(self):
+        """Test that recommendation returns a book when no books are read."""
+        result = recommend_book()
+        self.assertIn(result, [book["title"] for book in CAMUS_BOOKS])
 
-    def test_recommendation_with_books_read(self):
-        """Test recommendation logic when books have been read."""
-        # Test with The Stranger read
-        result = recommend_book(["The Stranger"])
-        self.assertEqual(result, "The Plague")
-        
-        # Test with multiple books read
-        result = recommend_book(["The Stranger", "The Plague"])
-        self.assertEqual(result, "The Fall")
-        
-        # Test with famous books read
-        result = recommend_book(["The Stranger", "The Plague", "The Fall"])
-        self.assertEqual(result, "The Myth of Sisyphus")
+    def test_recommendation_with_all_books_read(self):
+        """Test that recommendation handles case when all books are read."""
+        all_books = [book["title"] for book in CAMUS_BOOKS]
+        result = recommend_book(all_books)
+        self.assertEqual(result, "You've read all of Camus' major works! Consider re-reading your favorites.")
+    
+    @patch('librero.recommender.random.choice')
+    def test_recommendation_uses_random_choice(self, mock_choice):
+        """Test that recommendation uses random.choice for selection."""
+        mock_choice.return_value = {"title": "Test Book", "year": 2000, "genre": "Test"}
+        result = recommend_book()
+        self.assertEqual(result, "Test Book")
+        mock_choice.assert_called()
 
     def test_all_books_read_scenario(self):
         """Test when all major works have been read."""
