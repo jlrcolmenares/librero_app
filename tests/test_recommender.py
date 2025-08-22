@@ -1,9 +1,6 @@
 """Unit tests for the librero.recommender module."""
 
-from typing import Any, Dict, List
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 from librero.recommender import CAMUS_BOOKS, recommend_book
 

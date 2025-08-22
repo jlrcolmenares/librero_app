@@ -1,10 +1,15 @@
-from __future__ import annotations
-
 import random
-from typing import List, Optional
+from typing import List, Optional, TypedDict
+
 
 # Sample data of Albert Camus' works
-CAMUS_BOOKS = [
+class Book(TypedDict):
+    title: str
+    year: int
+    genre: str
+
+
+CAMUS_BOOKS: List[Book] = [
     {"title": "The Stranger", "year": 1942, "genre": "Absurdist fiction"},
     {"title": "The Plague", "year": 1947, "genre": "Philosophical novel"},
     {"title": "The Fall", "year": 1956, "genre": "Philosophical fiction"},
@@ -32,13 +37,15 @@ def recommend_book(books_read: Optional[List[str]] = None) -> str:
     books_read_lower = [book.lower() for book in books_read]
 
     # Find unread books
-    unread_books = [book for book in CAMUS_BOOKS if book["title"].lower() not in books_read_lower]
+    unread_books: List[Book] = [
+        book for book in CAMUS_BOOKS if book["title"].lower() not in books_read_lower
+    ]
 
     if not unread_books:
         return "You've read all of Camus' major works! Consider re-reading your favorites."
 
     # Select a random unread book
-    selected_book = random.choice(unread_books)
+    selected_book: Book = random.choice(unread_books)
 
     return (
         f"I recommend reading '{selected_book['title']}' ({selected_book['year']}), "

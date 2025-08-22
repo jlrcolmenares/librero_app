@@ -1,8 +1,7 @@
 """Tests for the camus_recommender CLI."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pytest
 from typer.testing import CliRunner
 
 from cli.camus_recommender import app
@@ -15,11 +14,11 @@ runner = CliRunner()
 @patch("builtins.input", side_effect=["\n", "q"])
 def test_recommend_command_basic(mock_input, mock_choice):
     """Test the basic recommend command."""
-    mock_choice.return_value = {"title": "The Stranger"}
+    mock_choice.return_value = {"title": "The Stranger", "year": 1942, "genre": "Absurdist fiction"}
     result = runner.invoke(app, ["recommend"], input="\nq\n")
     assert result.exit_code == 0
     assert "Welcome to the Camus Book Recommender!" in result.output
-    # The book title should appear after the first Enter press
+    assert "The Stranger" in result.output  # The book title should appear in the output
 
 
 @patch("cli.camus_recommender.recommend_book")
