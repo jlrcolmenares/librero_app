@@ -9,9 +9,11 @@ A simple command-line Python application that recommends a book by Albert Camus 
 
 ## Requirements
 - Python 3.13
+- Python 3.13
 
 ## Setup
 Run the setup:
+```sh
 make setup
 ```
 
