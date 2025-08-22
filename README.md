@@ -26,21 +26,18 @@ make setup
 ## Usage
 
 ### Get a Book Recommendation
+You must specify your current book to get a recommendation:
 ```sh
-make run_cli
+.venv/bin/python cli/camus_recommender.py recommend --current "The Stranger"
 ```
-Or run manually:
+You can also specify books you've already read:
 ```sh
-.venv/bin/python camus_recommender.py recommend
-```
-You can specify books you've already read:
-```sh
-.venv/bin/python camus_recommender.py recommend --read "The Plague" --read "The Fall"
+.venv/bin/python cli/camus_recommender.py recommend --current "The Stranger" --read "The Plague" --read "The Fall"
 ```
 
 ### List All Books
 ```sh
-.venv/bin/python camus_recommender.py list-books
+.venv/bin/python cli/camus_recommender.py list-books
 ```
 
 ## Clean Up

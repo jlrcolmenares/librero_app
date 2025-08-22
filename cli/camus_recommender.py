@@ -12,12 +12,30 @@ def cli():
     pass
 
 @cli.command()
+@click.option('--current', '-c', required=True, help="Your current book by Camus (required)")
 @click.option('--read', '-r', multiple=True, help="Books you've already read by Camus")
-def recommend(read):
-    """Get a book recommendation based on what you've already read."""
+def recommend(current, read):
+    """Get a book recommendation based on your current book and what you've already read."""
+    if not current:
+        console.print("[red]Please load your current book before we can suggest the next one.[/red]")
+        console.print("[yellow]Use: --current 'Book Title' to specify your current book[/yellow]\n")
+        return
+    
+    # Validate that the current book is a valid Camus book
+    valid_titles = [book["title"].lower() for book in CAMUS_BOOKS]
+    if current.lower() not in valid_titles:
+        console.print(f"[red]'{current}' is not a recognized Camus book.[/red]")
+        console.print("[yellow]Available books:[/yellow]")
+        display_books(CAMUS_BOOKS, "Albert Camus' Notable Works")
+        return
+    
     books_read = list(read)
+    # Add current book to the list of read books
+    if current not in books_read:
+        books_read.append(current)
+    
     recommendation = recommend_book(books_read)
-    console.print("\n[bold green]Based on what you've read, I recommend:[/bold green]")
+    console.print(f"\n[bold green]Since you're currently reading '{current}', I recommend:[/bold green]")
     console.print(f"[bold yellow]{recommendation}[/bold yellow]\n")
     display_books(CAMUS_BOOKS, "All of Albert Camus' Notable Works")
 
