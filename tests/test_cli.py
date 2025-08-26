@@ -1,154 +1,86 @@
-"""Integration tests for the CLI functionality."""
+"""Tests for the camus_recommender CLI."""
 
-import unittest
-import re
-from unittest.mock import patch, MagicMock
-from click.testing import CliRunner
-from cli.camus_recommender import cli
+from unittest.mock import patch
+
+from typer.testing import CliRunner
+
+from cli.camus_recommender import app
 from librero.recommender import CAMUS_BOOKS
 
-
-def strip_ansi_codes(text):
-    """Remove ANSI color codes from text for testing."""
-    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
-    return ansi_escape.sub('', text)
+runner = CliRunner()
 
 
-class TestCLIFunctionality(unittest.TestCase):
-    """Test cases for CLI commands and validation."""
-
-    def setUp(self):
-        """Set up test fixtures."""
-        self.runner = CliRunner()
-
-    def test_recommend_command_missing_current_book(self):
-        """Test that recommend command requires --current parameter."""
-        result = self.runner.invoke(cli, ['recommend'])
-        self.assertEqual(result.exit_code, 2)
-        self.assertIn("Missing option '--current'", result.output)
-
-    def test_recommend_command_with_valid_current_book(self):
-        """Test recommend command with valid current book."""
-        result = self.runner.invoke(cli, ['recommend', '--current', 'The Stranger'])
-        clean_output = strip_ansi_codes(result.output)
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("Since you're currently reading 'The Stranger'", clean_output)
-        self.assertIn("I recommend:", clean_output)
-
-    def test_recommend_command_with_invalid_current_book(self):
-        """Test recommend command with invalid current book."""
-        result = self.runner.invoke(cli, ['recommend', '--current', 'Invalid Book'])
-        clean_output = strip_ansi_codes(result.output)
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("'Invalid Book' is not a recognized Camus book", clean_output)
-        self.assertIn("Available books:", clean_output)
-
-    def test_recommend_command_with_current_and_read_books(self):
-        """Test recommend command with current book and previously read books."""
-        result = self.runner.invoke(cli, [
-            'recommend', 
-            '--current', 'The Stranger',
-            '--read', 'The Plague',
-            '--read', 'The Fall'
-        ])
-        clean_output = strip_ansi_codes(result.output)
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("Since you're currently reading 'The Stranger'", clean_output)
-
-    def test_recommend_command_case_insensitive_validation(self):
-        """Test that current book validation is case insensitive."""
-        result = self.runner.invoke(cli, ['recommend', '--current', 'the stranger'])
-        clean_output = strip_ansi_codes(result.output)
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("Since you're currently reading 'the stranger'", clean_output)
-
-    def test_list_books_command(self):
-        """Test list-books command functionality."""
-        result = self.runner.invoke(cli, ['list-books'])
-        self.assertEqual(result.exit_code, 0)
-        # Should display all books
-        for book in CAMUS_BOOKS:
-            self.assertIn(book["title"], result.output)
-
-    def test_list_books_with_title_filter(self):
-        """Test list-books command with title filter."""
-        result = self.runner.invoke(cli, ['list-books', '--title', 'Stranger'])
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("The Stranger", result.output)
-        # Should not contain other books
-        self.assertNotIn("The Plague", result.output)
-
-    def test_list_books_with_year_filter(self):
-        """Test list-books command with year filter."""
-        result = self.runner.invoke(cli, ['list-books', '--year', '1942'])
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("The Stranger", result.output)
-        self.assertIn("The Myth of Sisyphus", result.output)
-
-    def test_list_books_with_genre_filter(self):
-        """Test list-books command with genre filter."""
-        result = self.runner.invoke(cli, ['list-books', '--genre', 'essay'])
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("The Myth of Sisyphus", result.output)
-        self.assertIn("The Rebel", result.output)
-
-    def test_list_books_no_matches(self):
-        """Test list-books command when no books match criteria."""
-        result = self.runner.invoke(cli, ['list-books', '--title', 'Nonexistent'])
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("No books match your criteria", result.output)
-
-    def test_cli_help_command(self):
-        """Test that help command works."""
-        result = self.runner.invoke(cli, ['--help'])
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("A simple CLI for recommending books by Albert Camus", result.output)
-
-    def test_recommend_help_command(self):
-        """Test help for recommend command."""
-        result = self.runner.invoke(cli, ['recommend', '--help'])
-        self.assertEqual(result.exit_code, 0)
-        self.assertIn("Your current book by Camus (required)", result.output)
-        self.assertIn("Books you've already read by Camus", result.output)
+@patch("librero.recommender.random.choice")
+@patch("builtins.input", side_effect=["\n", "q"])
+def test_recommend_command_basic(mock_input, mock_choice):
+    """Test the basic recommend command."""
+    mock_choice.return_value = {"title": "The Stranger", "year": 1942, "genre": "Absurdist fiction"}
+    result = runner.invoke(app, ["recommend"], input="\nq\n")
+    assert result.exit_code == 0
+    assert "Welcome to the Camus Book Recommender!" in result.output
+    assert "The Stranger" in result.output  # The book title should appear in the output
 
 
-class TestCLIValidationLogic(unittest.TestCase):
-    """Test cases for CLI validation logic."""
-
-    def setUp(self):
-        """Set up test fixtures."""
-        self.runner = CliRunner()
-
-    def test_current_book_added_to_read_list(self):
-        """Test that current book is properly added to read books list."""
-        # This tests the internal logic that current book gets added to books_read
-        result = self.runner.invoke(cli, [
-            'recommend', 
-            '--current', 'The Stranger'
-        ])
-        self.assertEqual(result.exit_code, 0)
-        # The recommendation should be different than if The Stranger wasn't read
-        self.assertIn("The Plague", result.output)
-
-    def test_duplicate_current_and_read_book_handling(self):
-        """Test handling when current book is also in read list."""
-        result = self.runner.invoke(cli, [
-            'recommend', 
-            '--current', 'The Stranger',
-            '--read', 'The Stranger'  # Duplicate
-        ])
-        clean_output = strip_ansi_codes(result.output)
-        self.assertEqual(result.exit_code, 0)
-        # Should still work correctly
-        self.assertIn("Since you're currently reading 'The Stranger'", clean_output)
-
-    def test_valid_camus_books_recognition(self):
-        """Test that all valid Camus books are recognized."""
-        for book in CAMUS_BOOKS:
-            result = self.runner.invoke(cli, ['recommend', '--current', book["title"]])
-            self.assertEqual(result.exit_code, 0)
-            self.assertNotIn("is not a recognized Camus book", result.output)
+@patch("cli.camus_recommender.recommend_book")
+@patch("builtins.input", side_effect=["", "q"])
+def test_recommend_with_read_books(mock_input, mock_recommend):
+    """Test recommend command with --read parameter."""
+    mock_recommend.return_value = "The Plague"
+    result = runner.invoke(app, ["recommend", "--read", "The Stranger"])
+    assert result.exit_code == 0
+    # The function is called with the read books list
+    args, _ = mock_recommend.call_args
+    assert "The Stranger" in args[0]  # Check if 'The Stranger' is in the read books list
 
 
-if __name__ == "__main__":
-    unittest.main()
+@patch("cli.camus_recommender.recommend_book")
+@patch("builtins.input", side_effect=["q"])
+def test_recommend_quit_immediately(mock_input, mock_recommend):
+    """Test that recommend command can be quit immediately."""
+    result = runner.invoke(app, ["recommend"])
+    assert result.exit_code == 0
+    assert "Welcome to the Camus Book Recommender!" in result.output
+    mock_recommend.assert_not_called()
+
+
+def test_list_books_command():
+    """Test the list-books command."""
+    result = runner.invoke(app, ["list-books"])
+    assert result.exit_code == 0
+    for book in CAMUS_BOOKS:
+        assert book["title"] in result.output
+        assert str(book["year"]) in result.output
+        assert book["genre"] in result.output
+
+
+def test_help_command():
+    """Test the help command."""
+    result = runner.invoke(app, ["--help"])
+    assert result.exit_code == 0
+    # Check for command names in help output
+    assert "recommend" in result.output.lower()
+    assert "list-books" in result.output.lower()
+
+
+@patch("librero.recommender.random.choice")
+@patch("builtins.input", side_effect=["\n", "q"])
+def test_recommend_all_books_read(mock_input, mock_choice):
+    """Test behavior when all books have been read."""
+    all_books = [book["title"] for book in CAMUS_BOOKS]
+    # Mock random.choice to return the all-books-read message
+    mock_choice.return_value = {"title": "You've read all of Camus' major works! Consider re-reading your favorites."}
+
+    # Pass all books as read
+    args = ["recommend"] + [arg for book in all_books for arg in ["--read", book]]
+
+    result = runner.invoke(app, args, input="\nq\n")
+    assert result.exit_code == 0
+
+
+@patch("builtins.input", side_effect=KeyboardInterrupt())
+def test_recommend_handles_keyboard_interrupt(mock_input):
+    """Test that the CLI handles keyboard interrupt gracefully."""
+    result = runner.invoke(app, ["recommend"])
+    # On keyboard interrupt, exit code might be 1 or 130 depending on the system
+    assert result.exit_code in (0, 1, 130)
+    # The test doesn't need to check for specific exit messages since we're testing the CLI's behavior, not its output

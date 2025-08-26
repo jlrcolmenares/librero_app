@@ -4,21 +4,42 @@ VENV_DIR=.venv
 PYTHON=$(VENV_DIR)/bin/python
 PIP=$(VENV_DIR)/bin/pip
 
-.PHONY: venv setup run clean web
+.PHONY: venv setup test run clean pre-commit-install pre-commit-run
 
 venv:
 	python3 -m venv $(VENV_DIR)
 
-setup: venv
-	. $(VENV_DIR)/bin/activate && $(PIP) install --upgrade pip && $(PIP) install -r requirements.txt
+setup:
+	pipenv install --dev
+	pip install pre-commit
+	pre-commit install
 
-run_cli:
+# Run tests
+pytest:
+	pytest -v --cov=librero --cov=cli tests/
+
+# Run tests with coverage report
+test: pytest
+	coverage report -m
+
+# Run the CLI
+run:
 	PYTHONPATH=. $(PYTHON) -m cli.camus_recommender recommend
 
-web:
-	@echo "Starting Librero web server..."
-	@echo "Visit http://localhost:8000 to use the book recommender"
-	cd web && PYTHONPATH=.. ../$(PYTHON) app.py
+# Install pre-commit hooks
+pre-commit-install:
+	pre-commit install
 
+# Run pre-commit on all files
+pre-commit-run: pre-commit-install
+	pre-commit run --all-files
+
+# Alias for pre-commit-run
+pre-commit: pre-commit-run
+
+# Clean up
 clean:
 	rm -rf $(VENV_DIR)
+	rm -rf .pytest_cache
+	rm -f .coverage
+	rm -rf htmlcov/
