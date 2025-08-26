@@ -4,7 +4,7 @@ VENV_DIR=.venv
 PYTHON=$(VENV_DIR)/bin/python
 PIP=$(VENV_DIR)/bin/pip
 
-.PHONY: venv setup test run clean pre-commit-install pre-commit-run
+.PHONY: venv setup test run clean pre-commit-install pre-commit-run web
 
 venv:
 	python3 -m venv $(VENV_DIR)
@@ -36,6 +36,12 @@ pre-commit-run: pre-commit-install
 
 # Alias for pre-commit-run
 pre-commit: pre-commit-run
+
+# Start web server for SPA
+web:
+	@echo "Starting Librero web server..."
+	@echo "Visit http://localhost:8000 to use the book recommender"
+	cd web && PYTHONPATH=.. pipenv run python app.py
 
 # Clean up
 clean:
