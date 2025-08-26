@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librero - Camus Book Recommender</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .recommend-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-bottom: 30px;
+        }
+
+        .recommend-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .recommend-btn:active {
+            transform: translateY(0);
+        }
+
+        .recommend-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            color: #667eea;
+            font-style: italic;
+            margin: 20px 0;
+        }
+
+        .recommendation {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .recommendation h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .recommendation p {
+            color: #555;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .error {
+            background: #fee;
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #c0392b;
+            display: none;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Librero</h1>
+        <p class="subtitle">Discover your next Albert Camus book</p>
+        
+        <button id="recommendBtn" class="recommend-btn">
+            Recommend a Book
+        </button>
+        
+        <div id="loading" class="loading">
+            Getting your recommendation...
+        </div>
+        
+        <div id="recommendation" class="recommendation">
+            <h3>Your Recommendation</h3>
+            <p id="recommendationText"></p>
+        </div>
+        
+        <div id="error" class="error">
+            <p id="errorText"></p>
+        </div>
+        
+        <div class="footer">
+            <p>Powered by the wisdom of Albert Camus</p>
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const recommendBtn = document.getElementById('recommendBtn');
+        const loading = document.getElementById('loading');
+        const recommendation = document.getElementById('recommendation');
+        const recommendationText = document.getElementById('recommendationText');
+        const error = document.getElementById('error');
+        const errorText = document.getElementById('errorText');
+
+        // Hide all result elements initially
+        function hideAllResults() {
+            loading.style.display = 'none';
+            recommendation.style.display = 'none';
+            error.style.display = 'none';
+        }
+
+        // Function to get recommendation from the API
+        async function getRecommendation() {
+            try {
+                // Show loading state
+                hideAllResults();
+                loading.style.display = 'block';
+                recommendBtn.disabled = true;
+                recommendBtn.textContent = 'Getting recommendation...';
+
+                // Make API call to our FastAPI backend
+                const response = await fetch('/api/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        books_read: [] // Empty for simple recommendation
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Hide loading and show recommendation
+                hideAllResults();
+                recommendationText.textContent = data.message;
+                recommendation.style.display = 'block';
+
+            } catch (err) {
+                // Hide loading and show error
+                hideAllResults();
+                errorText.textContent = `Sorry, something went wrong: ${err.message}`;
+                error.style.display = 'block';
+                console.error('Error getting recommendation:', err);
+            } finally {
+                // Reset button state
+                recommendBtn.disabled = false;
+                recommendBtn.textContent = 'Recommend a Book';
+            }
+        }
+
+        // Add click event listener to the button
+        recommendBtn.addEventListener('click', getRecommendation);
+
+        // Optional: Allow Enter key to trigger recommendation
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter' && !recommendBtn.disabled) {
+                getRecommendation();
+            }
+        });
+    </script>
+</body>
+</html>
