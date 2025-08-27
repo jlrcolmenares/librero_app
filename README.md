@@ -20,10 +20,31 @@ make setup
 ```
 
 ## Usage
+
+### CLI Interface
 This is a CLI interface made with Typer. Run it with:
 
 ```sh
 make run
+```
+
+### Web Interface
+To start the web server and use the SPA interface:
+
+```sh
+make web
+```
+Then visit http://localhost:8000 in your browser.
+
+### Development
+Run the test suite:
+```sh
+make test
+```
+
+Run pre-commit hooks on all files:
+```sh
+make pre-commit
 ```
 
 ## Clean Up
