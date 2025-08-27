@@ -93,4 +93,80 @@ make clean
 
 ---
 
+## Development Guide
+
+### Core Concepts
+- Book recommendations are handled by `librero/recommender.py`
+- Books are stored as dataclass objects with title, year, and genre
+- Recommendations avoid previously read books
+- Case-insensitive book title matching
+
+### Data Model
+```python
+@dataclass
+class Book:
+    title: str
+    year: int
+    genre: str
+```
+
+### Extensibility Points
+1. Adding New Books
+   - Extend `CAMUS_BOOKS` in `recommender.py`
+   - Each book needs title, year, and genre
+
+2. New Recommendation Logic
+   - Modify `recommend_book()` in `recommender.py`
+   - Current: Random selection from unread books
+   - Possible: Genre-based, chronological, or difficulty-based
+
+3. User Preferences
+   - Could extend `Book` dataclass with new fields
+   - Add preference filters to recommendation logic
+
+### Adding Features
+1. Core Logic
+   - Add new features to `librero/recommender.py`
+   - Ensure 100% test coverage in `tests/test_recommender.py`
+   - Use type hints and docstrings
+
+2. CLI Features
+   - Extend `cli/camus_recommender.py`
+   - Follow Typer's command pattern
+   - Add tests in `tests/test_cli.py`
+
+3. Web Features
+   - Backend: Add endpoints to `web/app.py`
+   - Frontend: Modify `web/static/app.js`
+   - Add tests in `tests/test_web.py`
+
+### API and Data Flow
+1. Web Endpoints
+   ```python
+   # Main recommendation endpoint
+   POST /api/recommend
+   Request: { "books_read": ["string"] }
+   Response: {
+     "recommendation": "string",
+     "message": "string",
+     "total_books": int
+   }
+
+   # Health check
+   GET /health
+   Response: { "status": "healthy", "service": "librero-recommender" }
+   ```
+
+2. Data Flow
+   - Frontend (`app.js`) → API (`app.py`) → Core Logic (`recommender.py`)
+   - All book operations are case-insensitive
+   - Validation happens at API level using Pydantic
+   - Error handling for unknown/invalid books
+
+### Quality Standards
+- All code must pass `make pre-commit` (ruff, mypy, isort)
+- New features require tests
+- Maintain >95% test coverage
+- Follow existing code style
+
 Feel free to contribute or suggest improvements!
