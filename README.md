@@ -1,15 +1,17 @@
-# Book Recommender CLI - Librero App
+# Librero App
 
-A simple command-line Python application that recommends a book by Albert Camus based on what you have already read.
+A web application and CLI tool that recommends books by Albert Camus based on what you have already read.
 
 ## Features
-- Recommends a Camus book from a fixed list
-- Lists all notable works by Camus
-- Filters books by title, year, or genre
+- Web interface for getting book recommendations
+- CLI tool for command-line recommendations
+- Tracks reading history
+- Smart recommendations based on unread books
+- Full type checking and test coverage
 
 ## Requirements
-- Python 3.13
-- Python 3.13
+- Python 3.13+
+- pipenv (for dependency management)
 
 ## Setup
 Run the setup:
@@ -31,9 +33,42 @@ make clean
 ```
 
 ## Project Structure
-- `camus_recommender.py` — Main CLI application
-- `requirements.txt` — Python dependencies
-- `Makefile` — Automation for setup and running
+
+```
+├── cli/                    # CLI application
+│   └── camus_recommender.py  # Main CLI interface
+├── librero/               # Core library
+│   └── recommender.py       # Book recommendation logic
+├── tests/                 # Test suite
+│   ├── test_cli.py         # CLI tests
+│   ├── test_recommender.py  # Core logic tests
+│   └── test_web.py         # Web API tests
+├── web/                   # Web application
+│   ├── static/             # Static assets
+│   │   ├── app.js          # Frontend JavaScript
+│   │   ├── index.html      # Main SPA page
+│   │   └── style.css       # Styling
+│   └── app.py             # FastAPI backend
+├── Makefile              # Build automation
+├── Pipfile               # Dependencies
+├── Pipfile.lock          # Locked dependencies
+└── pyproject.toml        # Project configuration
+```
+
+## Dependencies
+
+### Production
+- FastAPI - Web framework
+- Typer - CLI interface
+- Pydantic - Data validation
+- uvicorn - ASGI server
+
+### Development
+- pytest - Testing
+- mypy - Type checking
+- ruff - Linting
+- isort - Import sorting
+- pre-commit - Git hooks
 
 ---
 
