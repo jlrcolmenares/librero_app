@@ -6,7 +6,7 @@ Exposes a single endpoint to get book recommendations.
 
 import os
 import sys
-from typing import List, Optional
+from typing import List
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
@@ -29,10 +29,13 @@ class RecommendationResponse(BaseModel):
 
 # Request model (optional, for future extensibility)
 class RecommendationRequest(BaseModel):
-    books_read: Optional[List[str]] = None
+    books_read: List[str]
+
+    class Config:
+        extra = "forbid"
 
 @app.post("/api/recommend", response_model=RecommendationResponse)
-async def get_recommendation(request: Optional[RecommendationRequest] = None) -> RecommendationResponse:
+async def get_recommendation(request: RecommendationRequest) -> RecommendationResponse:
     """
     Get a book recommendation using the existing recommend_book logic.
 
@@ -40,7 +43,7 @@ async def get_recommendation(request: Optional[RecommendationRequest] = None) ->
         JSON with recommendation string and a user-friendly message
     """
     # Extract books_read from request, default to empty list for simple recommendation
-    books_read = request.books_read if request and request.books_read else []
+    books_read = request.books_read if request.books_read else []
 
     try:
         # Use the existing recommendation logic
