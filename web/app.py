@@ -13,7 +13,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from librero.recommender import has_read_all_books, recommend_book
+from librero.recommender import CAMUS_BOOKS, has_read_all_books, recommend_book
 
 # Add the parent directory to the path so we can import from librero
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -25,6 +25,7 @@ app = FastAPI(title="Librero Book Recommender", version="1.0.0")
 class RecommendationResponse(BaseModel):
     recommendation: str
     message: str
+    total_books: int
 
 # Request model (optional, for future extensibility)
 class RecommendationRequest(BaseModel):
@@ -50,7 +51,8 @@ async def get_recommendation(request: Optional[RecommendationRequest] = None) ->
         )
         return RecommendationResponse(
             recommendation=result.title,
-            message=message
+            message=message,
+            total_books=len(CAMUS_BOOKS)
         )
     except ValueError as e:
         if has_read_all_books(books_read):
@@ -59,7 +61,8 @@ async def get_recommendation(request: Optional[RecommendationRequest] = None) ->
             message = str(e)
         return RecommendationResponse(
             recommendation="No recommendation available",
-            message=message
+            message=message,
+            total_books=len(CAMUS_BOOKS)
         )
 
 # Mount static files (for serving the HTML/CSS/JS)

@@ -40,6 +40,9 @@
     </div>
 
     <script>
+        // Initialize state
+        const previousBooks = [];
+
         // Get DOM elements
         const recommendBtn = document.getElementById('recommendBtn');
         const loading = document.getElementById('loading');
@@ -72,7 +75,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        books_read: [] // Empty for simple recommendation
+                        books_read: previousBooks
                     })
                 });
 
@@ -88,11 +91,27 @@
                 recommendationText.textContent = fullMessage;
                 currentRecommendation.style.display = 'block';
 
-                // Add to history if it's a book title (not the 're-read' message)
-                if (!data.recommendation.includes("read all of")) {
+                // Add to history if it's a valid book recommendation
+                if (data.recommendation !== 'No recommendation available') {
                     const historyItem = document.createElement('li');
                     historyItem.textContent = data.recommendation;
                     historyList.insertBefore(historyItem, historyList.firstChild);
+
+                    // Add to previous books if not already there
+                    if (!previousBooks.includes(data.recommendation)) {
+                        previousBooks.push(data.recommendation);
+                    }
+                }
+
+                // Keep only the last N items in history based on total available books
+                while (historyList.children.length > data.total_books) {
+                    historyList.removeChild(historyList.lastChild);
+                }
+
+                // Disable button if all books have been read
+                if (previousBooks.length >= data.total_books) {
+                    recommendBtn.disabled = true;
+                    recommendBtn.title = 'You have read all available books!';
                 }
 
             } catch (err) {
@@ -102,8 +121,8 @@
                 error.style.display = 'block';
                 console.error('Error getting recommendation:', err);
             } finally {
-                // Reset button state
-                recommendBtn.disabled = false;
+                // Only enable button if not all books are read
+                recommendBtn.disabled = previousBooks.length >= 7;
                 recommendBtn.textContent = 'Recommend a Book';
             }
         }
