@@ -7,7 +7,6 @@ repos:
     -   id: check-yaml
     -   id: check-merge-conflict
     -   id: debug-statements
-    -   id: requirements-txt-fixer
 
 -   repo: https://github.com/pycqa/isort
     rev: 5.12.0
