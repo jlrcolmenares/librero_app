@@ -79,9 +79,12 @@ async function getRecommendation() {
         error.style.display = 'block';
         console.error('Error getting recommendation:', err);
     } finally {
-        // Only enable button if not all books are read
-        recommendBtn.disabled = previousBooks.length >= data.total_books;
+        // Reset button text
         recommendBtn.textContent = 'Recommend a Book';
+        // Button stays enabled unless explicitly disabled when all books are read
+        if (!recommendBtn.title.includes('all books')) {
+            recommendBtn.disabled = false;
+        }
     }
 }
 
