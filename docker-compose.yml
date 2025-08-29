@@ -8,8 +8,6 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-    environment:
-      - CORS_ORIGINS=http://localhost:80
 
   frontend:
     build:
