@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librero - Camus Book Recommender</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Librero</h1>
+        <p class="subtitle">Discover your next Albert Camus book</p>
+
+        <button id="recommendBtn" class="recommend-btn">
+            Recommend a Book
+        </button>
+
+        <div id="loading" class="loading">
+            Getting your recommendation...
+        </div>
+
+        <div id="recommendations">
+            <div id="currentRecommendation" class="recommendation">
+                <h3>Current Recommendation</h3>
+                <p id="recommendationText"></p>
+            </div>
+            <div id="recommendationHistory" class="recommendation-history">
+                <h3>Previous Books</h3>
+                <ul id="historyList"></ul>
+            </div>
+        </div>
+
+        <div id="error" class="error">
+            <p id="errorText"></p>
+        </div>
+
+        <div class="footer">
+            <p>Powered by the wisdom of Albert Camus</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
