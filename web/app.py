@@ -10,7 +10,6 @@ import sys
 from typing import List
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -26,17 +25,6 @@ app = FastAPI(title="Librero Book Recommender", version="1.0.0")
 # Mount static files
 app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
 
-# Configure CORS
-# Get CORS origins from environment or use default
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:80").split(",")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST"],
-    allow_headers=["*"],
-)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
