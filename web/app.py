@@ -10,7 +10,6 @@ import sys
 from typing import List
 
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -29,108 +28,6 @@ app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Mount CSS file directly
-@app.get("/static/style.css")
-async def serve_css() -> HTMLResponse:
-    css = """
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 20px;
-        background: #f5f5f5;
-    }
-
-    .container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-        color: #2c3e50;
-        text-align: center;
-        margin-bottom: 0.5rem;
-    }
-
-    .subtitle {
-        text-align: center;
-        color: #7f8c8d;
-        margin-bottom: 2rem;
-    }
-
-    .recommend-btn {
-        display: block;
-        width: 100%;
-        padding: 1rem;
-        font-size: 1.1rem;
-        background-color: #3498db;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .recommend-btn:hover {
-        background-color: #2980b9;
-    }
-
-    .recommend-btn:disabled {
-        background-color: #bdc3c7;
-        cursor: not-allowed;
-    }
-
-    .loading {
-        text-align: center;
-        margin: 2rem 0;
-        display: none;
-        color: #7f8c8d;
-    }
-
-    .recommendation {
-        margin: 2rem 0;
-        display: none;
-    }
-
-    .recommendation h3 {
-        color: #2c3e50;
-        margin-bottom: 1rem;
-    }
-
-    .recommendation-history {
-        margin-top: 2rem;
-    }
-
-    .recommendation-history ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    .recommendation-history li {
-        padding: 0.5rem;
-        border-bottom: 1px solid #ecf0f1;
-    }
-
-    .error {
-        color: #e74c3c;
-        text-align: center;
-        margin: 2rem 0;
-        display: none;
-    }
-
-    .footer {
-        text-align: center;
-        margin-top: 2rem;
-        color: #95a5a6;
-        font-size: 0.9rem;
-    }
-    """
-    return Response(content=css, media_type="text/css")
 
 # Response model for the API
 class RecommendationResponse(BaseModel):
