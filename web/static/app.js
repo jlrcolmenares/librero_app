@@ -1,5 +1,6 @@
 // Initialize state
 const previousBooks = [];
+const API_URL = 'http://localhost:8000';
 
 // Get DOM elements
 const recommendBtn = document.getElementById('recommendBtn');
@@ -19,15 +20,19 @@ function hideAllResults() {
 
 // Function to get recommendation from the API
 async function getRecommendation() {
-    try {
-        // Show loading state
-        hideAllResults();
-        loading.style.display = 'block';
-        recommendBtn.disabled = true;
-        recommendBtn.textContent = 'Getting recommendation...';
+    // Prevent multiple clicks
+    if (recommendBtn.disabled) return;
 
+    // Reset any previous state
+    hideAllResults();
+    error.style.display = 'none';
+    loading.style.display = 'block';
+    recommendBtn.disabled = true;
+    recommendBtn.textContent = 'Finding your next book...';
+
+    try {
         // Make API call to our FastAPI backend
-        const response = await fetch('/api/recommend', {
+        const response = await fetch(`${API_URL}/api/recommend`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,11 +48,22 @@ async function getRecommendation() {
 
         const data = await response.json();
 
-        // Hide loading and show recommendation
+        // Update UI with recommendation
         hideAllResults();
-        const fullMessage = data.message;
-        recommendationText.textContent = fullMessage;
         currentRecommendation.style.display = 'block';
+        recommendationText.textContent = data.message;
+
+        // Calculate remaining books
+        const remainingBooks = data.total_books - previousBooks.length;
+
+        // Enable button for next recommendation unless all books are read
+        if (remainingBooks <= 0) {
+            recommendBtn.textContent = 'All Books Read!';
+            recommendBtn.disabled = true;
+        } else {
+            recommendBtn.textContent = `Get Next Book (${remainingBooks} remaining)`;
+            recommendBtn.disabled = false;
+        }
 
         // Add to history if it's a valid book recommendation
         if (data.recommendation !== 'No recommendation available') {
@@ -61,30 +77,15 @@ async function getRecommendation() {
             }
         }
 
-        // Keep only the last N items in history based on total available books
-        while (historyList.children.length > data.total_books) {
-            historyList.removeChild(historyList.lastChild);
-        }
-
-        // Disable button if all books have been read
-        if (previousBooks.length >= data.total_books) {
-            recommendBtn.disabled = true;
-            recommendBtn.title = 'You have read all available books!';
-        }
-
     } catch (err) {
         // Hide loading and show error
         hideAllResults();
         errorText.textContent = `Sorry, something went wrong: ${err.message}`;
         error.style.display = 'block';
         console.error('Error getting recommendation:', err);
-    } finally {
-        // Reset button text
-        recommendBtn.textContent = 'Recommend a Book';
-        // Button stays enabled unless explicitly disabled when all books are read
-        if (!recommendBtn.title.includes('all books')) {
-            recommendBtn.disabled = false;
-        }
+        // Reset button on error
+        recommendBtn.disabled = false;
+        recommendBtn.textContent = 'Try Again';
     }
 }
 

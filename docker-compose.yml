@@ -1,0 +1,23 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - CORS_ORIGINS=http://localhost:80
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./web/static:/usr/share/nginx/html
+    depends_on:
+      - backend

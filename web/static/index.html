@@ -39,6 +39,81 @@
         </div>
     </div>
 
-    <script src="/static/app.js" defer></script>
+    <script src="app.js"></script>
+</body>
+</html>
+                // Make API call to our FastAPI backend
+                const response = await fetch('/api/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        books_read: previousBooks
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Update UI with recommendation
+                hideAllResults();
+                currentRecommendation.style.display = 'block';
+                recommendationText.textContent = data.message;
+
+                // Calculate remaining books
+                const remainingBooks = data.total_books - previousBooks.length;
+
+                // Enable button for next recommendation unless all books are read
+                if (remainingBooks <= 0) {
+                    recommendBtn.textContent = 'All Books Read!';
+                    recommendBtn.disabled = true;
+                } else {
+                    recommendBtn.textContent = `Get Next Book (${remainingBooks} remaining)`;
+                    recommendBtn.disabled = false;
+                }
+
+                // Add to history if it's a valid book recommendation
+                if (data.recommendation !== 'No recommendation available') {
+                    const historyItem = document.createElement('li');
+                    historyItem.textContent = data.recommendation;
+                    historyList.insertBefore(historyItem, historyList.firstChild);
+
+                    // Add to previous books if not already there
+                    if (!previousBooks.includes(data.recommendation)) {
+                        previousBooks.push(data.recommendation);
+                    }
+                }
+
+                // Keep only the last N items in history based on total available books
+                while (historyList.children.length > data.total_books) {
+                    historyList.removeChild(historyList.lastChild);
+                }
+
+            } catch (err) {
+                // Hide loading and show error
+                hideAllResults();
+                errorText.textContent = `Sorry, something went wrong: ${err.message}`;
+                error.style.display = 'block';
+                console.error('Error getting recommendation:', err);
+                // Reset button on error
+                recommendBtn.disabled = false;
+                recommendBtn.textContent = 'Try Again';
+            }
+        }
+
+        // Add click event listener to the button
+        recommendBtn.addEventListener('click', getRecommendation);
+
+        // Optional: Allow Enter key to trigger recommendation
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter' && !recommendBtn.disabled) {
+                getRecommendation();
+            }
+        });
+    </script>
 </body>
 </html>
