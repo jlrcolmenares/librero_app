@@ -5,7 +5,7 @@ from unittest.mock import patch
 from typer.testing import CliRunner
 
 from cli.camus_recommender import app
-from librero.recommender import CAMUS_BOOKS
+from librero.recommender import CAMUS_BOOKS, Book
 
 runner = CliRunner()
 
@@ -14,7 +14,7 @@ runner = CliRunner()
 @patch("builtins.input", side_effect=["\n", "q"])
 def test_recommend_command_basic(mock_input, mock_choice):
     """Test the basic recommend command."""
-    mock_choice.return_value = {"title": "The Stranger", "year": 1942, "genre": "Absurdist fiction"}
+    mock_choice.return_value = Book(title="The Stranger", year=1942, genre="Absurdist fiction")
     result = runner.invoke(app, ["recommend"], input="\nq\n")
     assert result.exit_code == 0
     assert "Welcome to the Camus Book Recommender!" in result.output
@@ -25,7 +25,7 @@ def test_recommend_command_basic(mock_input, mock_choice):
 @patch("builtins.input", side_effect=["", "q"])
 def test_recommend_with_read_books(mock_input, mock_recommend):
     """Test recommend command with --read parameter."""
-    mock_recommend.return_value = "The Plague"
+    mock_recommend.return_value = Book(title="The Plague", year=1947, genre="Philosophical novel")
     result = runner.invoke(app, ["recommend", "--read", "The Stranger"])
     assert result.exit_code == 0
     # The function is called with the read books list
@@ -48,9 +48,9 @@ def test_list_books_command():
     result = runner.invoke(app, ["list-books"])
     assert result.exit_code == 0
     for book in CAMUS_BOOKS:
-        assert book["title"] in result.output
-        assert str(book["year"]) in result.output
-        assert book["genre"] in result.output
+        assert book.title in result.output
+        assert str(book.year) in result.output
+        assert book.genre in result.output
 
 
 def test_help_command():
@@ -66,9 +66,9 @@ def test_help_command():
 @patch("builtins.input", side_effect=["\n", "q"])
 def test_recommend_all_books_read(mock_input, mock_choice):
     """Test behavior when all books have been read."""
-    all_books = [book["title"] for book in CAMUS_BOOKS]
+    all_books = [book.title for book in CAMUS_BOOKS]
     # Mock random.choice to return the all-books-read message
-    mock_choice.return_value = {"title": "You've read all of Camus' major works! Consider re-reading your favorites."}
+    mock_choice.side_effect = ValueError("You've read all of Camus' major works! Consider re-reading your favorites.")
 
     # Pass all books as read
     args = ["recommend"] + [arg for book in all_books for arg in ["--read", book]]

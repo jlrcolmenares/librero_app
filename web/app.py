@@ -4,18 +4,20 @@ FastAPI backend for the Librero book recommender SPA.
 Exposes a single endpoint to get book recommendations.
 """
 
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
-from typing import List, Optional
 import os
 import sys
+from typing import List
+
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+from librero.recommender import CAMUS_BOOKS, has_read_all_books, recommend_book
 
 # Add the parent directory to the path so we can import from librero
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from librero.recommender import recommend_book
 
 app = FastAPI(title="Librero Book Recommender", version="1.0.0")
 
@@ -23,35 +25,48 @@ app = FastAPI(title="Librero Book Recommender", version="1.0.0")
 class RecommendationResponse(BaseModel):
     recommendation: str
     message: str
+    total_books: int
 
 # Request model (optional, for future extensibility)
 class RecommendationRequest(BaseModel):
-    books_read: Optional[List[str]] = None
+    books_read: List[str]
+
+    class Config:
+        extra = "forbid"
 
 @app.post("/api/recommend", response_model=RecommendationResponse)
-async def get_recommendation(request: RecommendationRequest = None):
+async def get_recommendation(request: RecommendationRequest) -> RecommendationResponse:
     """
     Get a book recommendation using the existing recommend_book logic.
-    
+
     Returns:
         JSON with recommendation string and a user-friendly message
     """
     # Extract books_read from request, default to empty list for simple recommendation
-    books_read = request.books_read if request and request.books_read else []
-    
-    # Use the existing recommendation logic
-    recommendation = recommend_book(books_read)
-    
-    # Create a user-friendly message
-    if recommendation == "You've read all of Camus' major works! Consider re-reading your favorites.":
-        message = "Looks like you've read everything! Time for a re-read."
-    else:
-        message = f"I recommend: {recommendation}"
-    
-    return RecommendationResponse(
-        recommendation=recommendation,
-        message=message
-    )
+    books_read = request.books_read if request.books_read else []
+
+    try:
+        # Use the existing recommendation logic
+        result = recommend_book(books_read)
+        message = (
+            f"I recommend reading: '{result.title}' ({result.year}), "
+            f"a {result.genre.lower()}. It's one of Camus' most celebrated works!"
+        )
+        return RecommendationResponse(
+            recommendation=result.title,
+            message=message,
+            total_books=len(CAMUS_BOOKS)
+        )
+    except ValueError as e:
+        if has_read_all_books(books_read):
+            message = "Looks like you've read everything! Time for a re-read."
+        else:
+            message = str(e)
+        return RecommendationResponse(
+            recommendation="No recommendation available",
+            message=message,
+            total_books=len(CAMUS_BOOKS)
+        )
 
 # Mount static files (for serving the HTML/CSS/JS)
 static_dir = os.path.join(os.path.dirname(__file__), "static")
@@ -59,7 +74,7 @@ if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/")
-async def serve_spa():
+async def serve_spa() -> FileResponse:
     """Serve the main SPA HTML file"""
     static_path = os.path.join(os.path.dirname(__file__), "static", "index.html")
     if os.path.exists(static_path):
@@ -67,7 +82,7 @@ async def serve_spa():
     return {"message": "SPA not found. Please ensure static/index.html exists."}
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str, str]:
     """Simple health check endpoint"""
     return {"status": "healthy", "service": "librero-recommender"}
 

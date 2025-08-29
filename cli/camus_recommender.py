@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import re
 from typing import List, Optional
 
 import typer  # type: ignore[import-not-found]
@@ -14,7 +13,7 @@ def display_books(books: List[Book], title: str = "Albert Camus' Books") -> None
     typer.echo(title)
     typer.echo("-" * len(title))
     for book in books:
-        typer.echo(f"Title: {book['title']} | Year: {book['year']} | Genre: {book['genre']}")
+        typer.echo(f"Title: {book.title} | Year: {book.year} | Genre: {book.genre}")
 
 
 @app.command()  # type: ignore[misc]
@@ -38,21 +37,23 @@ def recommend(
         if user_input.lower() == "q":
             break
 
-        recommendation = recommend_book(read_books)
-        if recommendation.startswith("You've read all"):
-            typer.echo(f"\n{recommendation}\n")
-            break
+        try:
+            # Get a recommendation
+            result = recommend_book(read_books)
 
-        typer.echo("\nI recommend:")
-        typer.echo(f"{recommendation}\n")
+            # Format the recommendation message
+            recommendation = (
+                f"I recommend reading: '{result.title}' ({result.year}), "
+                f"a {result.genre.lower()}. It's one of Camus' most celebrated works!"
+            )
+            typer.echo(f"{recommendation}\n")
 
-        # Extract the title from the recommendation sentence and track only titles
-        match = re.search(r"I recommend reading '([^']+)'", recommendation)
-        if match:
-            title = match.group(1)
-            if title not in read_books:
-                read_books.append(title)
-        typer.echo(f"Books read so far: {', '.join(read_books) if read_books else 'None'}\n")
+            # Add the book to read books if not already there
+            if result.title not in read_books:
+                read_books.append(result.title)
+            typer.echo(f"Books read so far: {', '.join(read_books) if read_books else 'None'}\n")
+        except ValueError as e:
+            typer.echo(f"{str(e)}\n")
 
 
 @app.command()  # type: ignore[misc]
