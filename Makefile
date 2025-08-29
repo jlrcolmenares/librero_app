@@ -37,11 +37,17 @@ pre-commit-run: pre-commit-install
 # Alias for pre-commit-run
 pre-commit: pre-commit-run
 
-# Start web server for SPA
+# Start web server for local development
 web:
-	@echo "Starting Librero web server..."
-	@echo "Visit http://localhost:8000 to use the book recommender"
+	@echo "Starting Librero web server (local development)..."
+	@echo "Visit http://localhost:8080 to use the book recommender"
 	cd web && PYTHONPATH=.. pipenv run python app.py
+
+# Start with Docker Compose
+docker:
+	@echo "Starting Librero with Docker Compose..."
+	@echo "Visit http://localhost to use the book recommender"
+	docker compose up --build
 
 # Clean up
 clean:
