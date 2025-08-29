@@ -1,13 +1,13 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY Pipfile* ./
+COPY backend/Pipfile* ./
 RUN pip install pipenv && \
     pipenv install --system --deploy
 
-COPY . .
+COPY backend/ .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "web.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

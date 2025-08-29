@@ -1,4 +1,13 @@
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+
   frontend:
     build:
       context: .
@@ -7,3 +16,5 @@ services:
       - "80:80"
     volumes:
       - ./frontend/static:/usr/share/nginx/html
+    depends_on:
+      - backend
