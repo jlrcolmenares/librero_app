@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from librero.recommender import CAMUS_BOOKS, Book, recommend_book
 from pydantic import BaseModel
@@ -99,10 +99,10 @@ async def get_recommendation(request: RecommendRequest) -> RecommendResponse:
         HTTPException: If all books have been read
     """
     total_books = len(CAMUS_BOOKS)
-    
+
     # Get total number of books
     total_books = len(CAMUS_BOOKS)
-    
+
     # Validate book titles
     known_titles = {book.title.lower() for book in CAMUS_BOOKS}
     unknown_titles = [title for title in request.books_read if title.lower() not in known_titles]

@@ -6,7 +6,6 @@ name = "pypi"
 [dev-packages]
 ruff = ">=0.7.0,<0.8.0"
 mypy = ">=1.6.1,<2.0.0"
-types-setuptools = ">=68.2.0,<69.0.0"
 pytest = ">=7.0.0"
 pytest-cov = ">=4.0.0"
 pytest-asyncio = "==0.23.5"

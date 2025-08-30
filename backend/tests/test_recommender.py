@@ -2,7 +2,6 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
 from librero.recommender import CAMUS_BOOKS, Book, has_read_all_books, recommend_book
 
 
@@ -24,10 +23,10 @@ def test_recommend_book_with_all_read():
     # Create a list of all book titles
     all_books = [book.title for book in CAMUS_BOOKS]
 
-    # Should raise ValueError when all books are read
-    with pytest.raises(ValueError) as exc_info:
-        recommend_book(all_books)
-    assert "read all" in str(exc_info.value).lower()
+    # Should return a random book for re-reading
+    result = recommend_book(all_books)
+    assert isinstance(result, Book)
+    assert result.title in all_books
 
 
 def test_has_read_all_books():
