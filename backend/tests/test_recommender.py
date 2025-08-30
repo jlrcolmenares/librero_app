@@ -3,7 +3,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from librero.recommender import CAMUS_BOOKS, Book, has_read_all_books, recommend_book
 
 

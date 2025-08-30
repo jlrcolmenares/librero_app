@@ -25,7 +25,7 @@ app.add_middleware(
 
 class RecommendRequest(BaseModel):
     """Request model for book recommendations."""
-    books_read: List[str] = []
+    books_read: List[str]
 
     class Config:
         json_schema_extra = {
@@ -55,7 +55,7 @@ class RecommendResponse(BaseModel):
     response_description="Health status of the API")
 async def health_check() -> Dict[str, str]:
     """Check if the API is healthy."""
-    return {"status": "healthy"}
+    return {"status": "healthy", "service": "librero-recommender"}
 
 @app.post("/api/recommend",
     summary="Get Book Recommendation",
@@ -98,19 +98,36 @@ async def get_recommendation(request: RecommendRequest) -> RecommendResponse:
     Raises:
         HTTPException: If all books have been read
     """
-    try:
-        # Get total number of books for remaining count
-        total_books = len(CAMUS_BOOKS)
-        remaining_books = total_books - len(request.books_read)
-
-        # Get recommendation
-        book: Book = recommend_book(request.books_read)
+    total_books = len(CAMUS_BOOKS)
+    
+    # Get total number of books
+    total_books = len(CAMUS_BOOKS)
+    
+    # Validate book titles
+    known_titles = {book.title.lower() for book in CAMUS_BOOKS}
+    unknown_titles = [title for title in request.books_read if title.lower() not in known_titles]
+    if unknown_titles:
         return RecommendResponse(
-            recommendation=book.title,
-            message=f"Next up: '{book.title}' ({book.year}), a {book.genre.lower()}. {remaining_books - 1} more books to explore!",
+            recommendation="No recommendation available",
+            message=f"Unknown book title(s): {', '.join(unknown_titles)}",
             total_books=total_books
         )
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception:
-        raise HTTPException(status_code=500, detail="Internal server error")
+
+    # Get recommendation
+    book: Book = recommend_book(request.books_read)
+    remaining_books = total_books - len(request.books_read)
+
+    # Handle all books read case
+    if remaining_books <= 0:
+        return RecommendResponse(
+            recommendation="No recommendation available",
+            message="You've read all of Camus' major works! Time for a re-read.",
+            total_books=total_books
+        )
+
+    # Return recommendation
+    return RecommendResponse(
+        recommendation=book.title,
+        message=f"Next up: '{book.title}' ({book.year}), a {book.genre.lower()}. {remaining_books - 1} more books to explore!",
+        total_books=total_books
+    )

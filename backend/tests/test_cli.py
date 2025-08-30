@@ -2,10 +2,9 @@
 
 from unittest.mock import patch
 
-from typer.testing import CliRunner
-
 from cli.camus_recommender import app
 from librero.recommender import CAMUS_BOOKS, Book
+from typer.testing import CliRunner
 
 runner = CliRunner()
 

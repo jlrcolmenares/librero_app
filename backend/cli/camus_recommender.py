@@ -2,7 +2,6 @@
 from typing import List, Optional
 
 import typer  # type: ignore[import-not-found]
-
 from librero.recommender import CAMUS_BOOKS, Book, recommend_book
 
 app = typer.Typer()
