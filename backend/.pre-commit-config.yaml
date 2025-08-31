@@ -29,7 +29,6 @@ repos:
     -   id: mypy
         name: mypy (types only)
         additional_dependencies: [types-setuptools]
-        args: [--config-file=mypy.ini]
         types: [python]
         # Only check files that are staged for commit
         stages: [commit]

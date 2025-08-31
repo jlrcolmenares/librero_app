@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 from typing import List, Optional
 
-import typer  # type: ignore[import-not-found]
-
+import typer
 from librero.recommender import CAMUS_BOOKS, Book, recommend_book
 
 app = typer.Typer()
@@ -16,7 +15,7 @@ def display_books(books: List[Book], title: str = "Albert Camus' Books") -> None
         typer.echo(f"Title: {book.title} | Year: {book.year} | Genre: {book.genre}")
 
 
-@app.command()  # type: ignore[misc]
+@app.command()
 def recommend(
     read: Optional[List[str]] = typer.Option(
         None,
@@ -56,7 +55,7 @@ def recommend(
             typer.echo(f"{str(e)}\n")
 
 
-@app.command()  # type: ignore[misc]
+@app.command()
 def list_books() -> None:
     """List all available books by Albert Camus."""
     display_books(CAMUS_BOOKS)

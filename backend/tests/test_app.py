@@ -1,7 +1,6 @@
 """Tests for the web API endpoints."""
+from app import app
 from fastapi.testclient import TestClient
-
-from web.app import app
 
 client = TestClient(app)
 
@@ -88,6 +87,7 @@ def test_get_recommendation_unknown_book():
     assert "recommendation" in data
     assert "message" in data
     assert "total_books" in data
-    assert data["recommendation"] != "No recommendation available"
-    assert data["recommendation"] not in ["Unknown Book"]
+    assert data["recommendation"] == "No recommendation available"
+    assert "Unknown book title(s)" in data["message"]
+    assert "Unknown Book" in data["message"]
     assert data["total_books"] > 0

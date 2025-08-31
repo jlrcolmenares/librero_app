@@ -29,12 +29,30 @@ make run
 ```
 
 ### Web Interface
-To start the web server and use the SPA interface:
 
+#### Local Development
+Start the web server:
 ```sh
 make web
 ```
-Then visit http://localhost:8000 in your browser.
+Visit http://localhost:8080 in your browser.
+
+#### Docker Setup
+Run with Docker Compose:
+```sh
+make docker
+```
+Visit http://localhost in your browser.
+
+#### API Documentation
+The API documentation is available at:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+Both provide interactive documentation where you can:
+- View all endpoints and models
+- Try out API calls
+- See request/response examples
 
 ### Development
 Run the test suite:
