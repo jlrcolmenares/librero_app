@@ -1,21 +1,15 @@
-# Makefile for Camus Recommender CLI
+# Makefile for Librero App
 
-VENV_DIR=.venv
-PYTHON=$(VENV_DIR)/bin/python
-PIP=$(VENV_DIR)/bin/pip
+.PHONY: up clean
 
-.PHONY: venv setup test run clean pre-commit-install
-.PHONY: docker docker-build docker-clean
-
-# Default target
-docker: docker-build
-
-# Build and start services
-docker-build:
+# Start the application
+up:
 	@echo "Starting Librero with Docker Compose..."
-	@echo "Visit http://localhost to use the book recommender"
+	@echo "Frontend: http://localhost:80"
+	@echo "Backend API: http://localhost/docs"
 	docker compose up --build
 
-# Clean up docker resources
-docker-clean:
+# Clean up all resources
+clean:
 	docker compose down --rmi all --volumes --remove-orphans
+	rm -rf .pytest_cache .coverage htmlcov/
