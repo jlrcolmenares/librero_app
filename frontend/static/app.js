@@ -11,6 +11,7 @@ const recommendationText = document.getElementById('recommendationText');
 const error = document.getElementById('error');
 const errorText = document.getElementById('errorText');
 const lastBookInput = document.getElementById('lastBookInput');
+const lastEnteredBook = document.getElementById('lastEnteredBook');
 
 // Hide all result elements initially
 function hideAllResults() {
@@ -26,6 +27,8 @@ function addBookFromInput() {
     if (bookTitle) {
         if (!previousBooks.includes(bookTitle)) {
             previousBooks.push(bookTitle);
+            // Update the displayed last entered book
+            lastEnteredBook.textContent = bookTitle;
             lastBookInput.value = '';
             return true;
         } else {
@@ -128,7 +131,24 @@ recommendBtn.addEventListener('click', getRecommendation);
 lastBookInput.addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
         event.preventDefault(); // Prevent form submission
-        getRecommendation();
+        const bookTitle = lastBookInput.value.trim();
+        if (bookTitle) {
+            // Update display immediately when Enter is pressed
+            if (!previousBooks.includes(bookTitle)) {
+                lastEnteredBook.textContent = bookTitle;
+            }
+            getRecommendation();
+        }
+    }
+});
+
+// Add event listener for input changes to show real-time feedback
+lastBookInput.addEventListener('input', function() {
+    const bookTitle = lastBookInput.value.trim();
+    if (bookTitle) {
+        lastEnteredBook.textContent = `${bookTitle} (not saved yet)`;
+    } else {
+        lastEnteredBook.textContent = previousBooks.length > 0 ? previousBooks[previousBooks.length - 1] : 'None';
     }
 });
 

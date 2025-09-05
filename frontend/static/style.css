@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #F5F5F5;
+    background: linear-gradient(135deg, #E8DCCA 0%, #D8C8B8 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -47,9 +47,9 @@ h1 {
 }
 
 .book-input:focus {
-    border-color: #667eea;
+    border-color: #C8AD7F;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 0 0 3px rgba(200, 173, 127, 0.2);
 }
 
 .input-help {
@@ -59,8 +59,27 @@ h1 {
     margin-top: 5px;
 }
 
+.entered-book-display {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #C8AD7F;
+}
+
+.entered-book-display p {
+    margin: 0;
+    color: #555;
+    font-size: 0.95em;
+}
+
+#lastEnteredBook {
+    font-weight: 600;
+    color: #333;
+}
+
 .recommend-btn {
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    background: #C8AD7F;
     color: white;
     border: none;
     padding: 15px 30px;
@@ -68,13 +87,13 @@ h1 {
     border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 15px rgba(200, 173, 127, 0.4);
     margin-bottom: 30px;
 }
 
 .recommend-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    box-shadow: 0 6px 20px rgba(200, 173, 127, 0.6);
 }
 
 .recommend-btn:active {
@@ -89,14 +108,14 @@ h1 {
 
 .loading {
     display: none;
-    color: #667eea;
+    color: #A89066;
     font-style: italic;
     margin: 20px 0;
 }
 
 .recommendation {
     background: #f8f9fa;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #C8AD7F;
     padding: 20px;
     margin: 20px 0;
     border-radius: 8px;
@@ -117,7 +136,7 @@ h1 {
 .recommendation-history {
     margin-top: 20px;
     background: #f8f9fa;
-    border-left: 4px solid #764ba2;
+    border-left: 4px solid #A89066;
     padding: 20px;
     border-radius: 8px;
 }
