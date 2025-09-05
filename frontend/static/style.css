@@ -73,11 +73,35 @@ h1 {
     border-top: 1px solid #eee;
 }
 
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 .books-history h4 {
     color: #555;
-    margin-bottom: 10px;
+    margin: 0;
     font-size: 1em;
     font-weight: 600;
+}
+
+.clear-btn {
+    background: #f8f9fa;
+    color: #A89066;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 0.8em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+    background: #A89066;
+    color: white;
+    border-color: #A89066;
 }
 
 #readingHistoryList {

@@ -153,10 +153,32 @@ lastBookInput.addEventListener('keypress', function(event) {
     }
 });
 
+// Function to clear reading history
+function clearReadingHistory() {
+    // Clear books from localStorage
+    bookStorage.clearBooks();
+
+    // Update UI
+    displayReadingHistory();
+
+    // Show confirmation message
+    errorText.textContent = 'Reading history cleared successfully';
+    error.style.display = 'block';
+    setTimeout(() => {
+        error.style.display = 'none';
+    }, 3000);
+}
+
 // Initialize the reading history display when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Load books from localStorage and update the UI
     displayReadingHistory();
+
+    // Add event listener for clear history button
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', clearReadingHistory);
+    }
 
     // Reset previousBooks array to ensure recommendations are independent of reading history
     // This ensures the recommendation button works as in the original implementation
