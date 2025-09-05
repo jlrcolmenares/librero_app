@@ -33,9 +33,13 @@ make run
 #### Local Development
 Start the web server:
 ```sh
-make web
+docker compose up --build
 ```
-Visit http://localhost:8080 in your browser.
+Or use the Makefile shortcut:
+```sh
+make up
+```
+Visit http://localhost in your browser.
 
 #### Docker Setup
 Run with Docker Compose:

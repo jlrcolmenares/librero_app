@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Librero - Camus Book Recommender</title>
+    <title>Librero - Book Recommender</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <h1>Librero</h1>
-        <p class="subtitle">Discover your next Albert Camus book</p>
+        <div id="bookInputContainer" class="book-input-container">
+            <input type="text" id="lastBookInput" class="book-input" placeholder="Enter the last book you read" />
+            <small id="inputHelp" class="input-help">Enter the title of the last book you read</small>
+        </div>
 
         <button id="recommendBtn" class="recommend-btn">
             Recommend a Book
@@ -35,7 +38,7 @@
         </div>
 
         <div class="footer">
-            <p>Powered by the wisdom of Albert Camus</p>
+            <p>Powered by the wisdom of great literature</p>
         </div>
     </div>
 

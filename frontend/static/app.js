@@ -10,6 +10,7 @@ const historyList = document.getElementById('historyList');
 const recommendationText = document.getElementById('recommendationText');
 const error = document.getElementById('error');
 const errorText = document.getElementById('errorText');
+const lastBookInput = document.getElementById('lastBookInput');
 
 // Hide all result elements initially
 function hideAllResults() {
@@ -18,10 +19,41 @@ function hideAllResults() {
     error.style.display = 'none';
 }
 
+// Function to add book from input to previousBooks array
+function addBookFromInput() {
+    const bookTitle = lastBookInput.value.trim();
+
+    if (bookTitle) {
+        if (!previousBooks.includes(bookTitle)) {
+            previousBooks.push(bookTitle);
+            lastBookInput.value = '';
+            return true;
+        } else {
+            // Book already in list
+            errorText.textContent = `You've already added "${bookTitle}" to your reading history.`;
+            error.style.display = 'block';
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 3000);
+        }
+    }
+    return false;
+}
+
 // Function to get recommendation from the API
 async function getRecommendation() {
     // Prevent multiple clicks
     if (recommendBtn.disabled) return;
+
+    // Add the book from input if available
+    addBookFromInput();
+
+    // If no books have been read, show error
+    if (previousBooks.length === 0) {
+        errorText.textContent = 'Please enter at least one book you have read.';
+        error.style.display = 'block';
+        return;
+    }
 
     // Reset any previous state
     hideAllResults();
@@ -92,9 +124,24 @@ async function getRecommendation() {
 // Add click event listener to the button
 recommendBtn.addEventListener('click', getRecommendation);
 
-// Optional: Allow Enter key to trigger recommendation
-document.addEventListener('keypress', function(event) {
-    if (event.key === 'Enter' && !recommendBtn.disabled) {
+// Add event listener for the input field
+lastBookInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent form submission
         getRecommendation();
     }
 });
+
+// Display any previously read books on page load
+function displayPreviousBooks() {
+    if (previousBooks.length > 0) {
+        previousBooks.forEach(book => {
+            const historyItem = document.createElement('li');
+            historyItem.textContent = book;
+            historyList.appendChild(historyItem);
+        });
+    }
+}
+
+// Initialize the display
+displayPreviousBooks();

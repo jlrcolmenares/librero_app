@@ -1,6 +1,6 @@
 # Makefile for Librero App
 
-.PHONY: up clean
+.PHONY: up clean frontend-test
 
 # Start the application
 up:
@@ -8,6 +8,11 @@ up:
 	@echo "Frontend: http://localhost:80"
 	@echo "Backend API: http://localhost/docs"
 	docker compose up --build
+
+# Run frontend tests
+frontend-test:
+	@echo "Running frontend tests..."
+	cd frontend && npm install && npm test
 
 # Clean up all resources
 clean:
