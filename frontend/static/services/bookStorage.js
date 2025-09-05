@@ -5,9 +5,18 @@
  * and provides methods for future backend integration.
  */
 
-// Book storage service
-const bookStorageService = {
-  // Save a book to localStorage
+const API_URL = 'http://localhost:8000';
+
+/**
+ * Book storage service for managing books in localStorage
+ * and interacting with the backend API
+ */
+const bookStorage = {
+  /**
+   * Save a book to localStorage
+   * @param {string} bookTitle - The title of the book to save
+   * @returns {boolean} - True if book was saved, false if it was a duplicate or empty
+   */
   saveBook(bookTitle) {
     if (!bookTitle) return false;
 
@@ -26,19 +35,29 @@ const bookStorageService = {
     return true;
   },
 
-  // Get all books from localStorage
+  /**
+   * Get all books from localStorage
+   * @returns {Array<string>} - Array of book titles
+   */
   getBooks() {
     const booksJson = localStorage.getItem('librero_books');
     return booksJson ? JSON.parse(booksJson) : [];
   },
 
-  // Clear all books from localStorage
+  /**
+   * Clear all books from localStorage
+   * @returns {Array} - Empty array
+   */
   clearBooks() {
     localStorage.removeItem('librero_books');
     return [];
   },
 
-  // Future implementation: Send book to backend
+  /**
+   * Send a book to the backend API
+   * @param {string} bookTitle - The title of the book to send
+   * @returns {Promise<Object>} - Response from the API
+   */
   async sendBookToBackend(bookTitle) {
     try {
       const response = await fetch(`${API_URL}/api/books`, {
@@ -60,3 +79,11 @@ const bookStorageService = {
     }
   }
 };
+
+// Export the bookStorage object for use in other files
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = bookStorage;
+} else {
+  // For browser environment
+  window.bookStorage = bookStorage;
+}

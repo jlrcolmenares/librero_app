@@ -67,6 +67,38 @@ h1 {
     border-left: 3px solid #C8AD7F;
 }
 
+.books-history {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.books-history h4 {
+    color: #555;
+    margin-bottom: 10px;
+    font-size: 1em;
+    font-weight: 600;
+}
+
+#readingHistoryList {
+    list-style: none;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+#readingHistoryList li {
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+    color: #666;
+    font-size: 0.9em;
+}
+
+#readingHistoryList li:last-child {
+    border-bottom: none;
+}
+
 .entered-book-display p {
     margin: 0;
     color: #555;

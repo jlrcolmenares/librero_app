@@ -1,6 +1,7 @@
 // Initialize state
 const previousBooks = [];
-const API_URL = 'http://localhost:8000';
+
+// bookStorage is loaded from services/bookStorage.js
 
 // Get DOM elements
 const recommendBtn = document.getElementById('recommendBtn');
@@ -12,6 +13,7 @@ const error = document.getElementById('error');
 const errorText = document.getElementById('errorText');
 const lastBookInput = document.getElementById('lastBookInput');
 const lastEnteredBook = document.getElementById('lastEnteredBook');
+const readingHistoryList = document.getElementById('readingHistoryList');
 
 // Hide all result elements initially
 function hideAllResults() {
@@ -94,14 +96,51 @@ async function getRecommendation() {
 // Add click event listener to the button
 recommendBtn.addEventListener('click', getRecommendation);
 
+// Function to display all books from localStorage
+function displayReadingHistory() {
+    // Clear the current list
+    readingHistoryList.innerHTML = '';
+
+    // Get books from localStorage
+    const books = bookStorage.getBooks();
+
+    // Display each book
+    books.forEach(book => {
+        const li = document.createElement('li');
+        li.textContent = book;
+        readingHistoryList.appendChild(li);
+    });
+
+    // Update the last book read display
+    if (books.length > 0) {
+        lastEnteredBook.textContent = books[books.length - 1];
+    } else {
+        lastEnteredBook.textContent = 'None';
+    }
+}
+
 // Function to update the last entered book display
 function updateLastEnteredBook() {
     const bookTitle = lastBookInput.value.trim();
     if (bookTitle) {
-        // Update UI to show the last entered book
-        lastEnteredBook.textContent = bookTitle;
-        lastBookInput.value = '';
-        return true;
+        // Save to localStorage
+        if (bookStorage.saveBook(bookTitle)) {
+            // Update UI to show the last entered book
+            lastEnteredBook.textContent = bookTitle;
+            lastBookInput.value = '';
+
+            // Update the reading history display
+            displayReadingHistory();
+
+            return true;
+        } else {
+            // Book already exists
+            errorText.textContent = `You've already added "${bookTitle}" to your reading history.`;
+            error.style.display = 'block';
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 3000);
+        }
     }
     return false;
 }
@@ -112,4 +151,14 @@ lastBookInput.addEventListener('keypress', function(event) {
         event.preventDefault(); // Prevent form submission
         updateLastEnteredBook();
     }
+});
+
+// Initialize the reading history display when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Load books from localStorage and update the UI
+    displayReadingHistory();
+
+    // Reset previousBooks array to ensure recommendations are independent of reading history
+    // This ensures the recommendation button works as in the original implementation
+    previousBooks.length = 0;
 });
