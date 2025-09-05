@@ -20,43 +20,10 @@ function hideAllResults() {
     error.style.display = 'none';
 }
 
-// Function to add book from input to previousBooks array
-function addBookFromInput() {
-    const bookTitle = lastBookInput.value.trim();
-
-    if (bookTitle) {
-        if (!previousBooks.includes(bookTitle)) {
-            previousBooks.push(bookTitle);
-            // Update the displayed last entered book
-            lastEnteredBook.textContent = bookTitle;
-            lastBookInput.value = '';
-            return true;
-        } else {
-            // Book already in list
-            errorText.textContent = `You've already added "${bookTitle}" to your reading history.`;
-            error.style.display = 'block';
-            setTimeout(() => {
-                error.style.display = 'none';
-            }, 3000);
-        }
-    }
-    return false;
-}
-
 // Function to get recommendation from the API
 async function getRecommendation() {
     // Prevent multiple clicks
     if (recommendBtn.disabled) return;
-
-    // Add the book from input if available
-    addBookFromInput();
-
-    // If no books have been read, show error
-    if (previousBooks.length === 0) {
-        errorText.textContent = 'Please enter at least one book you have read.';
-        error.style.display = 'block';
-        return;
-    }
 
     // Reset any previous state
     hideAllResults();
@@ -127,41 +94,23 @@ async function getRecommendation() {
 // Add click event listener to the button
 recommendBtn.addEventListener('click', getRecommendation);
 
+// Function to update the last entered book display
+function updateLastEnteredBook() {
+    const bookTitle = lastBookInput.value.trim();
+    if (bookTitle) {
+        lastEnteredBook.textContent = bookTitle;
+        lastBookInput.value = '';
+    }
+}
+
 // Add event listener for the input field
 lastBookInput.addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
         event.preventDefault(); // Prevent form submission
-        const bookTitle = lastBookInput.value.trim();
-        if (bookTitle) {
-            // Update display immediately when Enter is pressed
-            if (!previousBooks.includes(bookTitle)) {
-                lastEnteredBook.textContent = bookTitle;
-            }
-            getRecommendation();
-        }
+        updateLastEnteredBook();
+        // Stop event propagation to prevent it from triggering the document-level listener
+        event.stopPropagation();
     }
 });
 
-// Add event listener for input changes to show real-time feedback
-lastBookInput.addEventListener('input', function() {
-    const bookTitle = lastBookInput.value.trim();
-    if (bookTitle) {
-        lastEnteredBook.textContent = `${bookTitle} (not saved yet)`;
-    } else {
-        lastEnteredBook.textContent = previousBooks.length > 0 ? previousBooks[previousBooks.length - 1] : 'None';
-    }
-});
-
-// Display any previously read books on page load
-function displayPreviousBooks() {
-    if (previousBooks.length > 0) {
-        previousBooks.forEach(book => {
-            const historyItem = document.createElement('li');
-            historyItem.textContent = book;
-            historyList.appendChild(historyItem);
-        });
-    }
-}
-
-// Initialize the display
-displayPreviousBooks();
+// No document-level Enter key handler - recommendations only triggered by button click
