@@ -115,13 +115,13 @@ describe('Recommendation Button', () => {
   test('Button click triggers getRecommendation function', async () => {
     // Create a spy on the getRecommendation function
     const spy = jest.spyOn({ getRecommendation }, 'getRecommendation');
-    
+
     // Replace the actual function with the spy
     recommendBtn.onclick = spy;
-    
+
     // Simulate button click
     recommendBtn.click();
-    
+
     // Check if the function was called
     expect(spy).toHaveBeenCalled();
   });
@@ -129,10 +129,10 @@ describe('Recommendation Button', () => {
   test('getRecommendation function makes API call with correct parameters', async () => {
     // Add a book to the previousBooks array
     previousBooks.push('The Myth of Sisyphus');
-    
+
     // Call the function
     await getRecommendation();
-    
+
     // Check if fetch was called with the correct parameters
     expect(fetch).toHaveBeenCalledWith(
       'http://localhost:8000/api/recommend',
@@ -148,11 +148,11 @@ describe('Recommendation Button', () => {
   test('Button is disabled during API call', async () => {
     // Start the recommendation process
     const promise = getRecommendation();
-    
+
     // Check if button is disabled
     expect(recommendBtn.disabled).toBe(true);
     expect(recommendBtn.textContent).toBe('Finding your next book...');
-    
+
     // Wait for the API call to complete
     await promise;
   });
@@ -160,7 +160,7 @@ describe('Recommendation Button', () => {
   test('Button is re-enabled after API call completes', async () => {
     // Call the function
     await getRecommendation();
-    
+
     // Check if button is re-enabled
     expect(recommendBtn.disabled).toBe(false);
     expect(recommendBtn.textContent).toBe('Recommend a Book');
@@ -169,7 +169,7 @@ describe('Recommendation Button', () => {
   test('Recommendation is displayed after API call', async () => {
     // Call the function
     await getRecommendation();
-    
+
     // Check if recommendation is displayed
     expect(currentRecommendation.style.display).toBe('block');
     expect(recommendationText.textContent).toBe("Based on your reading history, we recommend 'The Stranger'");

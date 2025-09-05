@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Librero - Camus Book Recommender</title>
+    <title>Librero - Book Recommender</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <h1>Librero</h1>
         <div id="bookInputContainer" class="book-input-container">
-            <input type="text" id="lastBookInput" class="book-input" placeholder="Enter the last Camus book you read" />
-            <small id="inputHelp" class="input-help">Enter the title of the last Albert Camus book you read</small>
+            <input type="text" id="lastBookInput" class="book-input" placeholder="Enter the last book you read" />
+            <small id="inputHelp" class="input-help">Enter the last book you read</small>
             <div id="enteredBookDisplay" class="entered-book-display">
-                <p>Last entered book: <span id="lastEnteredBook">None</span></p>
+                <p>Last book read: <span id="lastEnteredBook">None</span></p>
             </div>
         </div>
 
@@ -27,11 +27,11 @@
 
         <div id="recommendations">
             <div id="currentRecommendation" class="recommendation">
-                <h3>Current Recommendation</h3>
+                <h3>New Recommendation</h3>
                 <p id="recommendationText"></p>
             </div>
             <div id="recommendationHistory" class="recommendation-history">
-                <h3>Previous Books</h3>
+                <h3>Previous Recommendations</h3>
                 <ul id="historyList"></ul>
             </div>
         </div>
@@ -41,7 +41,7 @@
         </div>
 
         <div class="footer">
-            <p>Powered by the wisdom of Albert Camus</p>
+            <p>Powered by the power and wisdom of books</p>
         </div>
     </div>
 
