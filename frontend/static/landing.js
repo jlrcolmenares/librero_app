@@ -1,7 +1,7 @@
 // Landing page specific JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Landing page loaded');
-    
+
     // Initialize any landing page specific functionality here
     const ctaButton = document.querySelector('.cta-button');
     if (ctaButton) {

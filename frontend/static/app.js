@@ -162,7 +162,7 @@ function addEventListeners() {
     if (recommendBtn) {
         recommendBtn.addEventListener('click', getRecommendation);
     }
-    
+
     // Add event listener for the input field
     if (lastBookInput) {
         lastBookInput.addEventListener('keypress', function(event) {
@@ -172,7 +172,7 @@ function addEventListeners() {
             }
         });
     }
-    
+
     // Add event listener for clear history button
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     if (clearHistoryBtn) {
@@ -199,23 +199,23 @@ function clearReadingHistory() {
 // Initialize the app when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded');
-    
+
     // Only initialize if we're on the recommendations page
     if (document.getElementById('recommendations-view')) {
         console.log('Recommendations view found, initializing...');
-        
+
         // Initialize DOM elements
         initDomElements();
-        
+
         // Load books from localStorage and update the UI
         displayReadingHistory();
-        
+
         // Add event listeners
         addEventListeners();
-        
+
         // Reset previousBooks array to ensure recommendations are independent of reading history
         previousBooks.length = 0;
-        
+
         console.log('Recommendations page initialized successfully');
     }
 });

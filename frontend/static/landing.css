@@ -131,11 +131,11 @@
     .hero h1 {
         font-size: 2.2em;
     }
-    
+
     .hero-text {
         font-size: 1em;
     }
-    
+
     .feature-grid {
         grid-template-columns: 1fr;
     }
@@ -146,24 +146,24 @@
     body {
         padding: 0;
     }
-    
+
     .hero {
         padding: 150px 0;
     }
-    
+
     .hero h1 {
         font-size: 4em;
     }
-    
+
     .hero-text {
         font-size: 1.4em;
         max-width: 800px;
     }
-    
+
     .feature-grid {
         grid-template-columns: repeat(3, 1fr);
     }
-    
+
     .container {
         max-width: 1200px;
         margin: 0 auto;

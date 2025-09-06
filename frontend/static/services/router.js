@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.matches('[data-link]')) {
             e.preventDefault();
             const href = e.target.getAttribute('href');
-            
+
             // Simple direct navigation
             if (href === '/') {
                 window.location.href = 'index.html';

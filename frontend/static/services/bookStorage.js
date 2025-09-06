@@ -5,12 +5,6 @@
  * and provides methods for future backend integration.
  */
 
-const API_URL = 'http://localhost:8000';
-
-/**
- * Book storage service for managing books in localStorage
- * and interacting with the backend API
- */
 const bookStorage = {
   /**
    * Save a book to localStorage
