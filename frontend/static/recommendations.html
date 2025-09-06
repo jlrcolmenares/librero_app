@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librero - Book Recommender</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="landing.css">
+    <script>
+        // Define API_URL for app.js
+        const API_URL = window.location.origin;
+    </script>
+</head>
+<body>
+    <div id="app">
+        <!-- Recommendations View -->
+        <div id="recommendations-view" class="view" style="display: block; width: 100%;">
+            <header class="landing-header">
+                <div class="container">
+                    <nav class="nav-container">
+                        <div class="logo">Librero</div>
+                        <div class="nav-links">
+                            <a href="/" data-link>Home</a>
+                            <a href="/recommendations" data-link>Recommendations</a>
+                        </div>
+                    </nav>
+                </div>
+            </header>
+            
+            <div class="container">
+        <h1>Librero</h1>
+        <div id="bookInputContainer" class="book-input-container">
+            <input type="text" id="lastBookInput" class="book-input" placeholder="Enter the last book you read" />
+            <div id="enteredBookDisplay" class="entered-book-display">
+                <p>Last book read: <span id="lastEnteredBook">None</span></p>
+                <div class="books-history">
+                    <div class="history-header">
+                        <h4>Your Reading History</h4>
+                        <button id="clearHistoryBtn" class="clear-btn">Clear History</button>
+                    </div>
+                    <ul id="readingHistoryList"></ul>
+                </div>
+            </div>
+        </div>
+
+        <button id="recommendBtn" class="recommend-btn">
+            Recommend a Book
+        </button>
+
+        <div id="loading" class="loading">
+            Getting your recommendation...
+        </div>
+
+        <div id="recommendations">
+            <div id="currentRecommendation" class="recommendation">
+                <h3>New Recommendation</h3>
+                <p id="recommendationText"></p>
+            </div>
+            <div id="recommendationHistory" class="recommendation-history">
+                <h3>Previous Recommendations</h3>
+                <ul id="historyList"></ul>
+            </div>
+        </div>
+
+        <div id="error" class="error">
+            <p id="errorText"></p>
+        </div>
+
+        <div class="footer">
+            <p>Powered by the power and wisdom of books</p>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="services/bookStorage.js"></script>
+    <script src="services/router.js"></script>
+    <script src="app.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

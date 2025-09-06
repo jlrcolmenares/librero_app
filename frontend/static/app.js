@@ -3,17 +3,31 @@ const previousBooks = [];
 
 // bookStorage is loaded from services/bookStorage.js
 
-// Get DOM elements
-const recommendBtn = document.getElementById('recommendBtn');
-const loading = document.getElementById('loading');
-const currentRecommendation = document.getElementById('currentRecommendation');
-const historyList = document.getElementById('historyList');
-const recommendationText = document.getElementById('recommendationText');
-const error = document.getElementById('error');
-const errorText = document.getElementById('errorText');
-const lastBookInput = document.getElementById('lastBookInput');
-const lastEnteredBook = document.getElementById('lastEnteredBook');
-const readingHistoryList = document.getElementById('readingHistoryList');
+// DOM elements
+let recommendBtn;
+let loading;
+let currentRecommendation;
+let historyList;
+let recommendationText;
+let error;
+let errorText;
+let lastBookInput;
+let lastEnteredBook;
+let readingHistoryList;
+
+// Initialize DOM elements
+function initDomElements() {
+    recommendBtn = document.getElementById('recommendBtn');
+    loading = document.getElementById('loading');
+    currentRecommendation = document.getElementById('currentRecommendation');
+    historyList = document.getElementById('historyList');
+    recommendationText = document.getElementById('recommendationText');
+    error = document.getElementById('error');
+    errorText = document.getElementById('errorText');
+    lastBookInput = document.getElementById('lastBookInput');
+    lastEnteredBook = document.getElementById('lastEnteredBook');
+    readingHistoryList = document.getElementById('readingHistoryList');
+}
 
 // Hide all result elements initially
 function hideAllResults() {
@@ -93,9 +107,6 @@ async function getRecommendation() {
     }
 }
 
-// Add click event listener to the button
-recommendBtn.addEventListener('click', getRecommendation);
-
 // Function to display all books from localStorage
 function displayReadingHistory() {
     // Clear the current list
@@ -145,13 +156,29 @@ function updateLastEnteredBook() {
     return false;
 }
 
-// Add event listener for the input field
-lastBookInput.addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Prevent form submission
-        updateLastEnteredBook();
+// Add event listeners
+function addEventListeners() {
+    // Add click event listener to the recommend button
+    if (recommendBtn) {
+        recommendBtn.addEventListener('click', getRecommendation);
     }
-});
+    
+    // Add event listener for the input field
+    if (lastBookInput) {
+        lastBookInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission
+                updateLastEnteredBook();
+            }
+        });
+    }
+    
+    // Add event listener for clear history button
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', clearReadingHistory);
+    }
+}
 
 // Function to clear reading history
 function clearReadingHistory() {
@@ -169,18 +196,26 @@ function clearReadingHistory() {
     }, 3000);
 }
 
-// Initialize the reading history display when the page loads
+// Initialize the app when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Load books from localStorage and update the UI
-    displayReadingHistory();
-
-    // Add event listener for clear history button
-    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-    if (clearHistoryBtn) {
-        clearHistoryBtn.addEventListener('click', clearReadingHistory);
+    console.log('DOM fully loaded');
+    
+    // Only initialize if we're on the recommendations page
+    if (document.getElementById('recommendations-view')) {
+        console.log('Recommendations view found, initializing...');
+        
+        // Initialize DOM elements
+        initDomElements();
+        
+        // Load books from localStorage and update the UI
+        displayReadingHistory();
+        
+        // Add event listeners
+        addEventListeners();
+        
+        // Reset previousBooks array to ensure recommendations are independent of reading history
+        previousBooks.length = 0;
+        
+        console.log('Recommendations page initialized successfully');
     }
-
-    // Reset previousBooks array to ensure recommendations are independent of reading history
-    // This ensures the recommendation button works as in the original implementation
-    previousBooks.length = 0;
 });
