@@ -10,32 +10,108 @@ A web application and CLI tool that recommends books by Albert Camus based on wh
 - Full type checking and test coverage
 
 ## Requirements
-- Python 3.13+
-- pipenv (for dependency management)
+- Docker and Docker Compose
+- Python 3.8+ (for local development)
+- pipenv (for local development)
+- SQLite3 (included with Python)
 
-## Setup
-Run the setup:
+## Database Setup
+The application uses SQLite3 for data storage. The database is automatically initialized when you first run the application.
+
+### Database Schema
+```sql
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT,
+    authors TEXT,
+    language_code TEXT,
+    isbn TEXT,
+    publication_date TEXT
+);
+```
+
+### Initializing the Database
+1. Place your `books.csv` file in the `backend/librero/data/` directory
+2. Run the database initialization script:
+   ```sh
+   cd backend
+   python3 -c "from librero.script.load_books import create_db, load_data; create_db(); load_data()"
+   ```
+   This will:
+   - Create a new SQLite database at `backend/librero/data/books.db`
+   - Load all books from the CSV file into the database
+
+### Sample Data
+For testing, you can load a small subset of the data:
 ```sh
-make setup
+python3 -c "from librero.script.load_books import create_db, load_data; create_db(); load_data(limit=50)"
+```
+
+## Setup with Docker (Recommended)
+```sh
+make up
+```
+
+This will:
+1. Build the Docker containers
+2. Set up all dependencies
+3. Start both the frontend and backend services
+
+## Local Development Setup
+If you need to run the services locally without Docker:
+
+1. Set up the backend:
+```sh
+cd backend
+pipenv install --dev
+pipenv shell
+```
+
+2. Set up the frontend:
+```sh
+cd ../frontend
+npm install
 ```
 
 ## Usage
 
-### CLI Interface
-This is a CLI interface made with Typer. Run it with:
-
-```sh
-make run
-```
+## Running the Application
 
 ### Web Interface
+To start the web application:
+
+```sh
+make up
+```
+
+This will start both the frontend and backend services using Docker. Once started, you can access:
+- Web interface: http://localhost
+- API documentation: http://localhost/docs
+
+### CLI Interface
+For command-line usage, you can run the CLI tool directly:
+
+```sh
+cd backend
+python -m cli.camus_recommender --current "The Stranger" --read "The Myth of Sisyphus"
+```
 
 #### Local Development
-Start the web server:
+To run the application locally without Docker:
+
+1. Start the backend server:
 ```sh
-make web
+cd backend
+pipenv run uvicorn librero.app:app --reload
 ```
-Visit http://localhost:8080 in your browser.
+
+2. In a new terminal, start the frontend development server:
+```sh
+cd frontend
+npm run dev
+```
+
+3. The web interface will be available at http://localhost:8080
 
 #### Docker Setup
 Run with Docker Compose:
