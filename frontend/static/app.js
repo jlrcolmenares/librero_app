@@ -1,5 +1,9 @@
 // Initialize state
 const previousBooks = [];
+<<<<<<< HEAD
+=======
+const API_URL = 'http://localhost:8000/api';
+>>>>>>> 445df19 (Implement SQLite database integration + updating the README file)
 
 // bookStorage is loaded from services/bookStorage.js
 
@@ -50,7 +54,7 @@ async function getRecommendation() {
 
     try {
         // Make API call to our FastAPI backend
-        const response = await fetch(`${API_URL}/api/recommend`, {
+        const response = await fetch(`${API_URL}/recommend`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

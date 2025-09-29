@@ -10,9 +10,149 @@ A web application and CLI tool that recommends books based on what you have alre
 - Full type checking and test coverage
 
 ## Requirements
+<<<<<<< HEAD
 - Python 3.12+
 - pipenv (for dependency management)
 
+=======
+- Docker and Docker Compose
+- Python 3.8+ (for local development)
+- pipenv (for local development)
+- SQLite3 (included with Python)
+
+## Database Setup
+The application uses SQLite3 for data storage. The database is automatically initialized when you first run the application.
+
+### Database Schema
+```sql
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title TEXT,
+    authors TEXT,
+    language_code TEXT,
+    isbn TEXT,
+    publication_date TEXT
+);
+```
+
+### Initializing the Database
+1. Place your `books.csv` file in the `backend/librero/data/` directory
+2. Run the database initialization script:
+   ```sh
+   cd backend
+   python3 -c "from librero.script.load_books import create_db, load_data; create_db(); load_data()"
+   ```
+   This will:
+   - Create a new SQLite database at `backend/librero/data/books.db`
+   - Load all books from the CSV file into the database
+
+### Sample Data
+For testing, you can load a small subset of the data:
+```sh
+python3 -c "from librero.script.load_books import create_db, load_data; create_db(); load_data(limit=50)"
+```
+
+## Setup with Docker (Recommended)
+```sh
+make up
+```
+
+This will:
+1. Build the Docker containers
+2. Set up all dependencies
+3. Start both the frontend and backend services
+
+## Local Development Setup
+If you need to run the services locally without Docker:
+
+1. Set up the backend:
+```sh
+cd backend
+pipenv install --dev
+pipenv shell
+```
+
+2. Set up the frontend:
+```sh
+cd ../frontend
+npm install
+```
+
+## Usage
+
+## Running the Application
+
+### Web Interface
+To start the web application:
+
+```sh
+make up
+```
+
+This will start both the frontend and backend services using Docker. Once started, you can access:
+- Web interface: http://localhost
+- API documentation: http://localhost/docs
+
+### CLI Interface
+For command-line usage, you can run the CLI tool directly:
+
+```sh
+cd backend
+python -m cli.camus_recommender --current "The Stranger" --read "The Myth of Sisyphus"
+```
+
+#### Local Development
+To run the application locally without Docker:
+
+1. Start the backend server:
+```sh
+cd backend
+pipenv run uvicorn librero.app:app --reload
+```
+
+2. In a new terminal, start the frontend development server:
+```sh
+cd frontend
+npm run dev
+```
+
+3. The web interface will be available at http://localhost:8080
+
+#### Docker Setup
+Run with Docker Compose:
+```sh
+make docker
+```
+Visit http://localhost in your browser.
+
+#### API Documentation
+The API documentation is available at:
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+Both provide interactive documentation where you can:
+- View all endpoints and models
+- Try out API calls
+- See request/response examples
+
+### Development
+Run the test suite:
+```sh
+make test
+```
+
+Run pre-commit hooks on all files:
+```sh
+make pre-commit
+```
+
+## Clean Up
+Remove the virtual environment:
+```sh
+make clean
+```
+
+>>>>>>> 445df19 (Implement SQLite database integration + updating the README file)
 ## Project Structure
 
 ```

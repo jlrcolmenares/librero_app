@@ -1,65 +1,84 @@
-#!/usr/bin/env python3
+import random
+from dataclasses import dataclass
 from typing import List, Optional
 
-import typer
-from librero.recommender import CAMUS_BOOKS, Book, recommend_book
 
-app = typer.Typer()
-
-
-def display_books(books: List[Book], title: str = "Albert Camus' Books") -> None:
-    """Display books in a simple text list using typer."""
-    typer.echo(title)
-    typer.echo("-" * len(title))
-    for book in books:
-        typer.echo(f"Title: {book.title} | Year: {book.year} | Genre: {book.genre}")
+# Sample data of Albert Camus' works
+@dataclass
+class Book:
+    title: str
+    year: int
+    genre: str
 
 
-@app.command()
-def recommend(
-    read: Optional[List[str]] = typer.Option(
-        None,
-        "--read",
-        "-r",
-        help="Books you've already read by Camus (can be used multiple times)",
-    )
-) -> None:
-    """Get a random book recommendation from Albert Camus' works."""
-    typer.echo("\nWelcome to the Camus Book Recommender!")
-    typer.echo("Press Enter to get a recommendation or 'q' to quit\n")
-
-    # Normalize the read list up-front
-    read_books: List[str] = read or []
-
-    while True:
-        user_input = input("Press Enter for a recommendation (or 'q' to quit): ")
-        if user_input.lower() == "q":
-            break
-
-        try:
-            # Get a recommendation
-            result = recommend_book(read_books)
-
-            # Format the recommendation message
-            recommendation = (
-                f"I recommend reading: '{result.title}' ({result.year}), "
-                f"a {result.genre.lower()}. It's one of Camus' most celebrated works!"
-            )
-            typer.echo(f"{recommendation}\n")
-
-            # Add the book to read books if not already there
-            if result.title not in read_books:
-                read_books.append(result.title)
-            typer.echo(f"Books read so far: {', '.join(read_books) if read_books else 'None'}\n")
-        except ValueError as e:
-            typer.echo(f"{str(e)}\n")
+CAMUS_BOOKS: List[Book] = [
+    Book(title="The Stranger", year=1942, genre="Absurdist fiction"),
+    Book(title="The Plague", year=1947, genre="Philosophical novel"),
+    Book(title="The Fall", year=1956, genre="Philosophical fiction"),
+    Book(title="The Myth of Sisyphus", year=1942, genre="Philosophical essay"),
+    Book(title="The Rebel", year=1951, genre="Philosophical essay"),
+    Book(title="The First Man", year=1994, genre="Autobiographical novel"),
+    Book(title="A Happy Death", year=1971, genre="Philosophical fiction"),
+]
 
 
-@app.command()
-def list_books() -> None:
-    """List all available books by Albert Camus."""
-    display_books(CAMUS_BOOKS)
+def has_read_all_books(books_read: Optional[List[str]] = None) -> bool:
+    """
+    Check if the user has read all available books.
+
+    Args:
+        books_read: List of book titles the user has already read
+
+    Returns:
+        bool: True if all books have been read, False otherwise
+    """
+    if books_read is None:
+        books_read = []
+
+    # Convert all book titles to lowercase for case-insensitive comparison
+    books_read_lower = [book.lower() for book in books_read]
+
+    # Find unread books
+    unread_books = [
+        book for book in CAMUS_BOOKS if book.title.lower() not in books_read_lower
+    ]
+
+    return len(unread_books) == 0
 
 
-if __name__ == "__main__":  # pragma: no cover
-    app()  # pragma: no cover
+def recommend_book(books_read: Optional[List[str]] = None) -> Book:
+    """
+    Recommend a book by Albert Camus that the user hasn't read yet.
+
+    Args:
+        books_read: List of book titles the user has already read
+
+    Returns:
+        Book: A randomly selected unread book or a random book if all have been read
+
+    Raises:
+        ValueError: If an unknown book title is provided
+    """
+    if books_read is None:
+        books_read = []
+
+    # Convert all book titles to lowercase for case-insensitive comparison
+    books_read_lower = [book.lower() for book in books_read]
+
+    # Validate book titles
+    known_titles = {book.title.lower() for book in CAMUS_BOOKS}
+    unknown_titles = [title for title in books_read_lower if title not in known_titles]
+    if unknown_titles:
+        raise ValueError(f"Unknown book title(s): {', '.join(unknown_titles)}")
+
+    # Find unread books
+    unread_books: List[Book] = [
+        book for book in CAMUS_BOOKS if book.title.lower() not in books_read_lower
+    ]
+
+    # If all books read, return a random book for re-reading
+    if not unread_books:
+        return random.choice(CAMUS_BOOKS)
+
+    # Otherwise select a random unread book
+    return random.choice(unread_books)
