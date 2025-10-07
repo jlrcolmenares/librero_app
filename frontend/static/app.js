@@ -89,12 +89,115 @@ async function getRecommendation() {
     }
 }
 
-// Add click event listener to the button
-recommendBtn.addEventListener('click', getRecommendation);
+// Function to display all books from localStorage
+function displayReadingHistory() {
+    // Clear the current list
+    readingHistoryList.innerHTML = '';
 
-// Optional: Allow Enter key to trigger recommendation
-document.addEventListener('keypress', function(event) {
-    if (event.key === 'Enter' && !recommendBtn.disabled) {
-        getRecommendation();
+    // Get books from localStorage
+    const books = bookStorage.getBooks();
+
+    // Display each book
+    books.forEach(book => {
+        const li = document.createElement('li');
+        li.textContent = book;
+        readingHistoryList.appendChild(li);
+    });
+
+    // Update the last book read display
+    if (books.length > 0) {
+        lastEnteredBook.textContent = books[books.length - 1];
+    } else {
+        lastEnteredBook.textContent = 'None';
+    }
+}
+
+// Function to update the last entered book display
+function updateLastEnteredBook() {
+    const bookTitle = lastBookInput.value.trim();
+    if (bookTitle) {
+        // Save to localStorage
+        if (bookStorage.saveBook(bookTitle)) {
+            // Update UI to show the last entered book
+            lastEnteredBook.textContent = bookTitle;
+            lastBookInput.value = '';
+
+            // Update the reading history display
+            displayReadingHistory();
+
+            return true;
+        } else {
+            // Book already exists
+            errorText.textContent = `You've already added "${bookTitle}" to your reading history.`;
+            error.style.display = 'block';
+            setTimeout(() => {
+                error.style.display = 'none';
+            }, 3000);
+        }
+    }
+    return false;
+}
+
+// Add event listeners
+function addEventListeners() {
+    // Add click event listener to the recommend button
+    if (recommendBtn) {
+        recommendBtn.addEventListener('click', getRecommendation);
+    }
+
+    // Add event listener for the input field
+    if (lastBookInput) {
+        lastBookInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission
+                updateLastEnteredBook();
+            }
+        });
+    }
+
+    // Add event listener for clear history button
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', clearReadingHistory);
+    }
+}
+
+// Function to clear reading history
+function clearReadingHistory() {
+    // Clear books from localStorage
+    bookStorage.clearBooks();
+
+    // Update UI
+    displayReadingHistory();
+
+    // Show confirmation message
+    errorText.textContent = 'Reading history cleared successfully';
+    error.style.display = 'block';
+    setTimeout(() => {
+        error.style.display = 'none';
+    }, 3000);
+}
+
+// Initialize the app when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
+
+    // Only initialize if we're on the recommendations page
+    if (document.getElementById('recommendations-view')) {
+        console.log('Recommendations view found, initializing...');
+
+        // Initialize DOM elements
+        initDomElements();
+
+        // Load books from localStorage and update the UI
+        displayReadingHistory();
+
+        // Add event listeners
+        addEventListeners();
+
+        // Reset previousBooks array to ensure recommendations are independent of reading history
+        previousBooks.length = 0;
+
+        console.log('Recommendations page initialized successfully');
     }
 });

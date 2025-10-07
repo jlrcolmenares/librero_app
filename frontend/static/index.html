@@ -3,42 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Librero - Camus Book Recommender</title>
+    <title>Librero - Your Personal Book Recommender</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="landing.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Librero</h1>
-        <p class="subtitle">Discover your next Albert Camus book</p>
+    <div id="app">
+        <!-- Landing Page View -->
+        <div id="landing-view" class="view">
+            <header class="landing-header">
+                <div class="container">
+                    <nav class="nav-container">
+                        <div class="logo">Librero</div>
+                        <div class="nav-links">
+                            <a href="/" data-link>Home</a>
+                            <a href="/recommendations" data-link>Recommendations</a>
+                        </div>
+                    </nav>
+                </div>
+            </header>
 
-        <button id="recommendBtn" class="recommend-btn">
-            Recommend a Book
-        </button>
+            <section class="hero">
+                <div class="container">
+                    <h1>Discover Your Next Favorite Book</h1>
+                    <p class="hero-text">Librero helps you find the perfect book based on your reading history and preferences.</p>
+                    <a href="/recommendations" class="cta-button" data-link>Get Started</a>
+                </div>
+            </section>
 
-        <div id="loading" class="loading">
-            Getting your recommendation...
+            <section class="features">
+                <div class="container">
+                    <h2>Why Librero?</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h3>Smart Recommendations</h3>
+                            <p>Our algorithm suggests books tailored to your reading history.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Track Your Reading</h3>
+                            <p>Keep a record of books you've read and get better recommendations.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Simple to Use</h3>
+                            <p>Just enter the books you've read and get instant recommendations.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="landing-footer">
+                <div class="container">
+                    <p>Powered by the power and wisdom of books</p>
+                </div>
+            </footer>
         </div>
 
-        <div id="recommendations">
-            <div id="currentRecommendation" class="recommendation">
-                <h3>Current Recommendation</h3>
-                <p id="recommendationText"></p>
-            </div>
-            <div id="recommendationHistory" class="recommendation-history">
-                <h3>Previous Books</h3>
-                <ul id="historyList"></ul>
-            </div>
-        </div>
-
-        <div id="error" class="error">
-            <p id="errorText"></p>
-        </div>
-
-        <div class="footer">
-            <p>Powered by the wisdom of Albert Camus</p>
-        </div>
+        <!-- Recommendations View will be loaded from index.html -->
     </div>
 
-    <script src="app.js"></script>
+    <script src="services/router.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>

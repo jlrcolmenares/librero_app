@@ -1,6 +1,6 @@
 # Librero App
 
-A web application and CLI tool that recommends books by Albert Camus based on what you have already read.
+A web application and CLI tool that recommends books based on what you have already read.
 
 ## Features
 - Web interface for getting book recommendations
@@ -150,42 +150,65 @@ make clean
 ## Project Structure
 
 ```
-├── cli/                    # CLI application
-│   └── camus_recommender.py  # Main CLI interface
-├── librero/               # Core library
-│   └── recommender.py       # Book recommendation logic
-├── tests/                 # Test suite
-│   ├── test_cli.py         # CLI tests
-│   ├── test_recommender.py  # Core logic tests
-│   └── test_web.py         # Web API tests
-├── web/                   # Web application
-│   ├── static/             # Static assets
-│   │   ├── app.js          # Frontend JavaScript
-│   │   ├── index.html      # Main SPA page
-│   │   └── style.css       # Styling
-│   └── app.py             # FastAPI backend
+├── backend/                # Backend application
+│   ├── cli/                # CLI application
+│   │   └── camus_recommender.py  # Main CLI interface
+│   ├── librero/           # Core library
+│   │   └── recommender.py  # Book recommendation logic
+│   ├── pyproject.toml     # Backend configuration
+│   └── Pipfile            # Backend dependencies
+├── frontend/              # Frontend application
+│   ├── static/            # Static assets
+│   │   ├── services/      # Frontend services
+│   │   │   └── bookStorage.js  # Book storage service
+│   │   ├── app.js         # Frontend JavaScript
+│   │   ├── index.html     # Main SPA page
+│   │   └── style.css      # Styling
+│   ├── tests/             # Frontend test suite
+│   │   ├── book_storage.test.js  # Book storage tests
+│   │   ├── button_element.test.js  # Button tests
+│   │   ├── input_element.test.js  # Input tests
+│   │   └── local_storage.test.js  # LocalStorage tests
+│   ├── package.json       # Frontend dependencies
+│   └── .gitignore         # Frontend-specific gitignore
 ├── Makefile              # Build automation
-├── Pipfile               # Dependencies
-├── Pipfile.lock          # Locked dependencies
-└── pyproject.toml        # Project configuration
+├── docker-compose.yml    # Docker configuration
+├── backend.Dockerfile    # Backend Docker image
+├── frontend.Dockerfile   # Frontend Docker image
+└── README.md             # Project documentation
 ```
 
-## Dependencies
+## Local Development Environment
 
-### Production
-- FastAPI - Web framework
-- Typer - CLI interface
-- Pydantic - Data validation
-- uvicorn - ASGI server
+### Full Stack Development
+- Use Docker Compose to run both frontend and backend together:
+  ```sh
+  make up
+  ```
+- This will start both services and make the application available at http://localhost
+- Changes to the frontend will be reflected immediately
+- Backend changes require restarting the containers
 
-### Development
-- pytest - Testing
-- mypy - Type checking
-- ruff - Linting
-- isort - Import sorting
-- pre-commit - Git hooks
+### Backend-only Development
+- For backend development without Docker:
+  ```sh
+  cd backend
+  make setup  # Install dependencies
+  make test   # Run backend tests
+  make run    # Run the backend server
+  ```
+- The backend API will be available at http://localhost:8000
 
----
+### Frontend-only Development
+- For frontend development without Docker:
+  ```sh
+  cd frontend
+  npm install  # Install dependencies
+  npm test     # Run frontend tests
+  npm start    # Start development server
+  ```
+- The frontend will be available at http://localhost:3000
+- You may need to configure API endpoints to point to your backend
 
 ## Development Guide
 
@@ -194,15 +217,6 @@ make clean
 - Books are stored as dataclass objects with title, year, and genre
 - Recommendations avoid previously read books
 - Case-insensitive book title matching
-
-### Data Model
-```python
-@dataclass
-class Book:
-    title: str
-    year: int
-    genre: str
-```
 
 ### Extensibility Points
 1. Adding New Books
