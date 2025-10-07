@@ -1,15 +1,19 @@
 // Initialize state
 const previousBooks = [];
-const API_URL = 'http://localhost:8000/api';
+const API_URL = '/api';
+console.log('API_URL defined as:', API_URL);
 
-// Get DOM elements
-const recommendBtn = document.getElementById('recommendBtn');
-const loading = document.getElementById('loading');
-const currentRecommendation = document.getElementById('currentRecommendation');
-const historyList = document.getElementById('historyList');
-const recommendationText = document.getElementById('recommendationText');
-const error = document.getElementById('error');
-const errorText = document.getElementById('errorText');
+// Get DOM elements - will be initialized after DOM loads
+let recommendBtn;
+let loading;
+let currentRecommendation;
+let historyList;
+let recommendationText;
+let error;
+let errorText;
+let lastBookInput;
+let lastEnteredBook;
+let readingHistoryList;
 
 // Hide all result elements initially
 function hideAllResults() {
@@ -31,6 +35,9 @@ async function getRecommendation() {
     recommendBtn.textContent = 'Finding your next book...';
 
     try {
+        // Get books from reading history to exclude them from recommendations
+        const booksRead = bookStorage.getBooks();
+
         // Make API call to our FastAPI backend
         const response = await fetch(`${API_URL}/recommend`, {
             method: 'POST',
@@ -38,7 +45,7 @@ async function getRecommendation() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                books_read: previousBooks
+                books_read: booksRead
             })
         });
 
@@ -54,10 +61,10 @@ async function getRecommendation() {
         recommendationText.textContent = data.message;
 
         // Calculate remaining books
-        const remainingBooks = data.total_books - previousBooks.length;
+        const remainingBooks = data.total_books - booksRead.length;
 
         // Enable button for next recommendation unless all books are read
-        if (remainingBooks <= 0) {
+        if (remainingBooks <= 0 || data.recommendation === 'No recommendation available') {
             recommendBtn.textContent = 'All Books Read!';
             recommendBtn.disabled = true;
         } else {
@@ -66,7 +73,7 @@ async function getRecommendation() {
         }
 
         // Add to history if it's a valid book recommendation
-        if (data.recommendation !== 'No recommendation available') {
+        if (data.recommendation && data.recommendation !== 'No recommendation available' && data.recommendation !== 'Error') {
             const historyItem = document.createElement('li');
             historyItem.textContent = data.recommendation;
             historyList.insertBefore(historyItem, historyList.firstChild);
@@ -176,6 +183,27 @@ function clearReadingHistory() {
     setTimeout(() => {
         error.style.display = 'none';
     }, 3000);
+}
+
+// Function to initialize DOM elements
+function initDomElements() {
+    console.log('App.js: Initializing DOM elements...');
+
+    recommendBtn = document.getElementById('recommendBtn');
+    loading = document.getElementById('loading');
+    currentRecommendation = document.getElementById('currentRecommendation');
+    historyList = document.getElementById('historyList');
+    recommendationText = document.getElementById('recommendationText');
+    error = document.getElementById('error');
+    errorText = document.getElementById('errorText');
+    lastBookInput = document.getElementById('lastBookInput');
+    lastEnteredBook = document.getElementById('lastEnteredBook');
+    readingHistoryList = document.getElementById('readingHistoryList');
+
+    console.log('App.js: Elements found:', {
+        recommendBtn: !!recommendBtn,
+        loading: !!loading
+    });
 }
 
 // Initialize the app when the DOM is fully loaded
