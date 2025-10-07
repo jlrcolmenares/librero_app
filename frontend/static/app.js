@@ -1,37 +1,15 @@
 // Initialize state
 const previousBooks = [];
-<<<<<<< HEAD
-=======
 const API_URL = 'http://localhost:8000/api';
->>>>>>> 445df19 (Implement SQLite database integration + updating the README file)
 
-// bookStorage is loaded from services/bookStorage.js
-
-// DOM elements
-let recommendBtn;
-let loading;
-let currentRecommendation;
-let historyList;
-let recommendationText;
-let error;
-let errorText;
-let lastBookInput;
-let lastEnteredBook;
-let readingHistoryList;
-
-// Initialize DOM elements
-function initDomElements() {
-    recommendBtn = document.getElementById('recommendBtn');
-    loading = document.getElementById('loading');
-    currentRecommendation = document.getElementById('currentRecommendation');
-    historyList = document.getElementById('historyList');
-    recommendationText = document.getElementById('recommendationText');
-    error = document.getElementById('error');
-    errorText = document.getElementById('errorText');
-    lastBookInput = document.getElementById('lastBookInput');
-    lastEnteredBook = document.getElementById('lastEnteredBook');
-    readingHistoryList = document.getElementById('readingHistoryList');
-}
+// Get DOM elements
+const recommendBtn = document.getElementById('recommendBtn');
+const loading = document.getElementById('loading');
+const currentRecommendation = document.getElementById('currentRecommendation');
+const historyList = document.getElementById('historyList');
+const recommendationText = document.getElementById('recommendationText');
+const error = document.getElementById('error');
+const errorText = document.getElementById('errorText');
 
 // Hide all result elements initially
 function hideAllResults() {

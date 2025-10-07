@@ -10,11 +10,6 @@ A web application and CLI tool that recommends books based on what you have alre
 - Full type checking and test coverage
 
 ## Requirements
-<<<<<<< HEAD
-- Python 3.12+
-- pipenv (for dependency management)
-
-=======
 - Docker and Docker Compose
 - Python 3.8+ (for local development)
 - pipenv (for local development)
@@ -152,7 +147,6 @@ Remove the virtual environment:
 make clean
 ```
 
->>>>>>> 445df19 (Implement SQLite database integration + updating the README file)
 ## Project Structure
 
 ```
