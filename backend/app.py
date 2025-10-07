@@ -2,7 +2,7 @@ from typing import Dict, List
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from librero.recommender import CAMUS_BOOKS, Book, recommend_book
+from librero.recommender import Book, recommend_book, get_books_from_db
 from pydantic import BaseModel
 
 # Initialize FastAPI app with metadata for OpenAPI docs
@@ -98,18 +98,38 @@ async def get_recommendation(request: RecommendRequest) -> RecommendResponse:
     Raises:
         HTTPException: If all books have been read
     """
-    total_books = len(CAMUS_BOOKS)
-
-    # Get total number of books
-    total_books = len(CAMUS_BOOKS)
-
-    # Validate book titles
-    known_titles = {book.title.lower() for book in CAMUS_BOOKS}
-    unknown_titles = [title for title in request.books_read if title.lower() not in known_titles]
-    if unknown_titles:
+    # Get total number of books from database
+    try:
+        db_books = get_books_from_db()
+        total_books = len(db_books) if db_books else 0
+        if not total_books:
+            return RecommendResponse(
+                recommendation="No books available",
+                message="No books found in the database",
+                total_books=0
+            )
+    except Exception as e:
         return RecommendResponse(
-            recommendation="No recommendation available",
-            message=f"Unknown book title(s): {', '.join(unknown_titles)}",
+            recommendation="Error",
+            message=f"Failed to fetch books: {str(e)}",
+            total_books=0
+        )
+
+    # Validate book titles against database
+    try:
+        db_books = get_books_from_db()
+        known_titles = {title.lower() for title, _ in db_books}
+        unknown_titles = [title for title in request.books_read if title.lower() not in known_titles]
+        if unknown_titles:
+            return RecommendResponse(
+                recommendation="No recommendation available",
+                message=f"Unknown book title(s): {', '.join(unknown_titles)}",
+                total_books=total_books
+            )
+    except Exception as e:
+        return RecommendResponse(
+            recommendation="Error",
+            message=f"Failed to validate book titles: {str(e)}",
             total_books=total_books
         )
 
@@ -131,3 +151,19 @@ async def get_recommendation(request: RecommendRequest) -> RecommendResponse:
         message=f"Next up: '{book.title}' ({book.year}), a {book.genre.lower()}. {remaining_books - 1} more books to explore!",
         total_books=total_books
     )
+
+@app.get("/api/books")
+def list_books(limit: int = 5):
+    """Get a list of books from the database.
+    
+    Args:
+        limit: Maximum number of books to return (default: 5)
+        
+    Returns:
+        dict: A dictionary containing a list of books with their titles and authors
+    """
+    try:
+        books = get_books_from_db(limit)
+        return {"books": [{"title": title, "authors": authors} for title, authors in books]}
+    except Exception as e:
+        return {"error": f"Failed to fetch books: {str(e)}"}

@@ -1,6 +1,6 @@
 // Initialize state
 const previousBooks = [];
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://localhost:8000/api';
 
 // Get DOM elements
 const recommendBtn = document.getElementById('recommendBtn');
@@ -32,7 +32,7 @@ async function getRecommendation() {
 
     try {
         // Make API call to our FastAPI backend
-        const response = await fetch(`${API_URL}/api/recommend`, {
+        const response = await fetch(`${API_URL}/recommend`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
